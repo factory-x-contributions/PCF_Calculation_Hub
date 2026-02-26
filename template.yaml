@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: PCF Creator API - FastAPI on Lambda + API Gateway (Mangum)
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+      - uhlmann
+  BasicAuthUsername:
+    Type: String
+    Default: admin
+    NoEcho: true
+  BasicAuthPassword:
+    Type: String
+    Default: "admin"
+    NoEcho: true
+    Description: "Login password for /login and /config (use a strong value in prod)"
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.13
+    Architectures:
+      - x86_64
+
+Resources:
+  PcfHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Environment
+
+  PcfDatabaseBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+
+  PcfCreatorApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.main.handler
+      CodeUri: .
+      Description: PCF Creator REST API (FastAPI + Mangum)
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+              Resource: !Sub "${PcfDatabaseBucket.Arn}/*"
+            - Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource: !Sub "arn:aws:s3:::${PcfDatabaseBucket}"
+      Environment:
+        Variables:
+          PYTHONUNBUFFERED: "1"
+          APP_NAME: "PCF Creator API"
+          ENVIRONMENT: !Ref Environment
+          DEBUG: "false"
+          BASIC_AUTH_USERNAME: !Ref BasicAuthUsername
+          BASIC_AUTH_PASSWORD: !Ref BasicAuthPassword
+          # Local fallback cache inside Lambda execution environment
+          DATABASE_PATH: "/tmp/app/data/data_base.json"
+          # Durable storage for work_order_records database across deploys
+          DATABASE_S3_BUCKET: !Ref PcfDatabaseBucket
+          DATABASE_S3_KEY: !Sub "${Environment}/data_base.json"
+          # App config: /tmp for local cache, S3 for persistence across deploys
+          APP_CONFIG_PATH: "/tmp/app/data/app_config.json"
+          APP_CONFIG_S3_BUCKET: !Ref PcfDatabaseBucket
+          APP_CONFIG_S3_KEY: !Sub "${Environment}/app_config.json"
+          SESSION_SECRET_KEY: !Sub "pcf-creator-${Environment}-change-me"
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref PcfHttpApi
+            Path: /{proxy+}
+            Method: ANY
+        ApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref PcfHttpApi
+            Path: /
+            Method: ANY
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway HTTP API URL (use this base URL for /docs, /consumptionData, etc.)
+    Value: !Sub "https://${PcfHttpApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiUrl"
+  FunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt PcfCreatorApiFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionArn"
+  DatabaseBucketName:
+    Description: S3 bucket used for durable database persistence
+    Value: !Ref PcfDatabaseBucket
+    Export:
+      Name: !Sub "${AWS::StackName}-DatabaseBucketName"

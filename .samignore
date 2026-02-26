@@ -1,0 +1,21 @@
+# Dependencies are installed by SAM into the package; exclude local venv
+.venv
+venv
+env
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+htmlcov
+.git
+.github
+*.md
+.env
+.env.*
+!.env.example
+tests
+test_*.py
+*.tgz
+*.log
+.cursor
+mcps
