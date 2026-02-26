@@ -1,0 +1,36 @@
+/* Default Swagger UI 5 theme (white) – relative path so it works behind /dev or any stage */
+@import url('swagger-ui.css');
+
+/* Logo in top-left corner – relative paths so they work behind API Gateway stage */
+body::before {
+  content: '';
+  position: fixed;
+  top: 14px;
+  left: 20px;
+  width: 42px;
+  height: 42px;
+  background: url('WvSC_logo.png') center / contain no-repeat;
+  z-index: 100;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Push top bar content right so it doesn't sit under the logo */
+.swagger-ui .topbar {
+  padding-left: 72px !important;
+}
+
+/* Manufacturing-X, Factory-X and BMW E logos bottom right */
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 14px;
+  right: 20px;
+  width: 220px;
+  height: 58px;
+  background-image: url('manufacturing-x-logo.svg'), url('factory-x-logo.svg'), url('bmwe_logo.png');
+  background-repeat: no-repeat;
+  background-size: 62px auto, 62px auto, 62px auto;
+  background-position: left center, center center, right center;
+  z-index: 100;
+}
