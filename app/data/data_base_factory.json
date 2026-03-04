@@ -1,0 +1,38 @@
+{
+    "Hall_20E": {
+        "DMG": {
+            "electricity": {
+                "idle_consumption_total_kwh": 0.50088,
+                "prod_consumption_total_kwh": 0.06919,
+                "total_time": 6.0588999999999995,
+                "total_idle_time": 5.2603,
+                "work_orders_duration": {
+                    "WO-2026-03-13-14-13-58": 0.8
+                },
+                "idle_consumption_rate": 4.960108270478139,
+                "prod_consumption_rate": 0.6851738764462196,
+                "machine_name": "DMG",
+                "entry_count": 2,
+                "publication_datetime": "2026-05-03T20:51:45.776000Z"
+            }
+        }
+    },
+    "Hall_20D": {
+        "Trumpf": {
+            "electricity": {
+                "idle_consumption_total_kwh": 0.49105,
+                "prod_consumption_total_kwh": 0.07526,
+                "total_time": 6.0588999999999995,
+                "total_idle_time": 5.2036,
+                "work_orders_duration": {
+                    "WO-2026-03-13-14-13-58": 0.8666
+                },
+                "idle_consumption_rate": 4.86276386802885,
+                "prod_consumption_rate": 0.745283797388965,
+                "machine_name": "Trumpf",
+                "entry_count": 2,
+                "publication_datetime": "2026-05-03T20:51:45.776000Z"
+            }
+        }
+    }
+}
