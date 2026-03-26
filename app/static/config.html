@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Main Dashboard – PCF Calculation Hub</title>
+  <script>
+    (function(){var t=localStorage.getItem('pcf-theme')||'light';if(t==='light')document.documentElement.setAttribute('data-theme','light');})();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/config.css?v=3">
+</head>
+<body class="config-page">
+  <div class="app-layout">
+    <aside id="sidebar" class="sidebar" aria-label="Main navigation">
+      <button type="button" id="hamburger-btn" class="sidebar-hamburger sidebar-logo-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar-nav">
+        <img src="/static/WvSC_logo.png" alt="WvSC" class="sidebar-logo">
+      </button>
+      <nav id="sidebar-nav" class="sidebar-nav">
+        <a href="/config" class="sidebar-link active-nav" title="Main Dashboard">
+          <span class="sidebar-icon-wrap"><svg class="sidebar-icon sidebar-icon-solid" viewBox="0 0 24 24" fill="currentColor"><path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 101.061 1.06l8.69-8.69z"/><path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z"/></svg><span class="sidebar-label">Main Dashboard</span></span>
+        </a>
+        <a href="/docs" target="_blank" rel="noopener" class="sidebar-link docs" title="Docs">
+          <span class="sidebar-icon-wrap"><svg class="sidebar-icon sidebar-icon-solid" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="sidebar-label">Docs</span></span>
+        </a>
+        <a href="/work_order_records" class="sidebar-link" title="Work order records">
+          <span class="sidebar-icon-wrap"><svg class="sidebar-icon sidebar-icon-solid" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd"/><path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd"/></svg><span class="sidebar-label">Work order records</span></span>
+        </a>
+        <a href="/factory_energy_distribution" class="sidebar-link" title="Factory Energy Distribution">
+          <span class="sidebar-icon-wrap"><svg class="sidebar-icon sidebar-icon-solid" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4,18V20H8V18H4M4,14V16H14V14H4M10,18V20H14V18H10M16,14V16H20V14H16M16,18V20H20V18H16M2,22V8L7,12V8L12,12V8L17,12L18,2H21L22,12V22H2Z" clip-rule="evenodd"/></svg><span class="sidebar-label">Factory Energy Distribution</span></span>
+        </a>
+        <a href="/data_base_view" target="_blank" rel="noopener" class="sidebar-link sidebar-link-db" title="Database JSON view">
+          <span class="sidebar-icon-wrap"><svg class="sidebar-icon sidebar-icon-solid" viewBox="0 0 24 24" fill="currentColor"><path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z"/><path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z"/><path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z"/><path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z"/></svg><span class="sidebar-label">DB JSON</span></span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/docs" target="_blank" rel="noopener" class="sidebar-link sidebar-link-help" title="Help">
+          <span class="sidebar-icon-wrap"><svg class="sidebar-icon sidebar-icon-solid" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"/></svg><span class="sidebar-label">Help</span></span>
+        </a>
+      </div>
+    </aside>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    <div class="app-body">
+      <header class="config-appbar">
+        <!-- Siemens logo (uncomment when needed)
+        <img src="/static/sie_logo_white_rgb.svg" alt="Siemens" class="config-appbar-logo config-appbar-logo-center">
+        -->
+        <div class="config-appbar-brand">
+          <div class="config-appbar-title-block">
+            <h1 class="config-appbar-title">PCF Calculation Hub</h1>
+            <p class="config-appbar-tagline">Production data, carbon footprint computation, and PCF management integration.</p>
+          </div>
+        </div>
+        <div class="config-appbar-user">
+          <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Switch to light theme" title="Switch theme">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </button>
+          <a href="/api/auth/logout" class="config-appbar-logout">Sign out</a>
+        </div>
+      </header>
+
+      <script src="/static/sidebar.js?v=3"></script>
+
+  <main class="config-main">
+    <div class="config-card">
+      <h2 class="config-card-title">Main Dashboard</h2>
+      <p class="config-card-subtitle">Manage application and integration settings. Changes take effect after saving.</p>
+
+      <div class="config-layout">
+        <nav role="tablist" class="config-tabs">
+          <button type="button" role="tab" id="tab-btn-overview" class="config-tab active" aria-selected="true" aria-controls="tabpanel-overview" data-tab="overview">Overview</button>
+          <button type="button" role="tab" id="tab-btn-datasource" class="config-tab" aria-selected="false" aria-controls="tabpanel-datasource" data-tab="datasource">Data Source</button>
+          <button type="button" role="tab" id="tab-btn-pcf" class="config-tab" aria-selected="false" aria-controls="tabpanel-pcf" data-tab="pcf">PCF Management Tool</button>
+          <button type="button" role="tab" id="tab-btn-users" class="config-tab" aria-selected="false" aria-controls="tabpanel-users" data-tab="users" hidden>Users</button>
+        </nav>
+        <div class="config-content">
+          <div id="message" class="config-message"></div>
+
+          <!-- ── Overview tab ── -->
+          <div id="tabpanel-overview" role="tabpanel" class="config-tabpanel active" aria-labelledby="tab-btn-overview">
+        <div id="overview-dashboard" class="overview-dashboard"></div>
+      </div>
+
+      <!-- ── Data Source tab ── -->
+      <div id="tabpanel-datasource" role="tabpanel" class="config-tabpanel" aria-labelledby="tab-btn-datasource" hidden>
+        <p class="config-card-subtitle" style="margin-bottom: 1.25rem;">Choose where consumption data is received from. Click the selected option again to clear.</p>
+        <div class="pcf-provider-buttons">
+          <button type="button" id="btn-ds-mes" class="pcf-provider-btn">MES</button>
+          <button type="button" id="btn-ds-aas" class="pcf-provider-btn">AAS</button>
+        </div>
+
+        <div id="panel-ds-mes" class="pcf-provider-panel collapsed">
+          <div class="config-section">
+            <div class="config-section-label">Manufacturing Execution System (MES)</div>
+            <p class="config-card-subtitle" style="margin: 0 0 1rem; font-size: 0.875rem;">
+              The MES pushes consumption data directly via REST API calls.
+              Please refer to the <a href="/docs" target="_blank" rel="noopener" style="color: var(--config-accent);">API documentation</a> for the correct endpoints and payload format.
+            </p>
+          </div>
+          <div class="config-actions">
+            <button type="button" id="btn-save-ds-mes" class="btn-primary">Save configuration</button>
+          </div>
+        </div>
+
+        <div id="panel-ds-aas" class="pcf-provider-panel collapsed">
+          <form id="aas-config-form" class="config-form">
+            <div class="config-section">
+              <div class="config-section-label">Asset Administration Shell (AAS)</div>
+              <p class="config-card-subtitle" style="margin: 0 0 1rem 0; font-size: 0.875rem;">Configure the AAS registry connection to pull consumption data automatically.</p>
+              <div class="form-group">
+                <label for="aas_type">AAS type</label>
+                <select id="aas_type" name="aas_type">
+                  <option value="AAS (AssetFox)">AAS (AssetFox)</option>
+                  <option value="AAS (BaSyx)">AAS (BaSyx)</option>
+                </select>
+                <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">AssetFox for cloud registry; BaSyx for local/on-premises.</p>
+              </div>
+              <div class="form-group">
+                <label for="aas_base_url">Base URL</label>
+                <input type="url" id="aas_base_url" name="aas_base_url" placeholder="https://aas-registry.example.com/api">
+              </div>
+              <div class="form-group">
+                <label for="aas_client_id">Client ID</label>
+                <input type="password" id="aas_client_id" name="aas_client_id" placeholder="AAS API client ID">
+              </div>
+              <div class="form-group">
+                <label for="aas_client_secret">Client Secret</label>
+                <input type="password" id="aas_client_secret" name="aas_client_secret" placeholder="AAS API client secret">
+              </div>
+              <div class="form-group">
+                <label for="aas_check_period_minutes">Period for processing completed work orders (minutes)</label>
+                <input type="number" id="aas_check_period_minutes" name="aas_check_period_minutes" min="0" max="1440" step="0.1" placeholder="0 = disabled">
+                <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">How often the app checks the AAS for available shells and processes ended. 0 disables automatic checking.</p>
+              </div>
+            </div>
+            <div class="config-actions">
+              <button type="submit" class="btn-primary">Save configuration</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── PCF Management Tool tab ── -->
+      <div id="tabpanel-pcf" role="tabpanel" class="config-tabpanel" aria-labelledby="tab-btn-pcf" hidden>
+        <p class="config-card-subtitle" style="margin-bottom: 1.25rem;">Select a PCF management provider to configure its connection settings. Click the selected option again to clear.</p>
+        <div class="pcf-provider-buttons">
+          <button type="button" id="btn-provider-sigreen" class="pcf-provider-btn">SiGREEN</button>
+          <button type="button" id="btn-provider-sap" class="pcf-provider-btn">SAP</button>
+        </div>
+
+        <div id="panel-sigreen" class="pcf-provider-panel collapsed">
+          <form id="config-form" class="config-form">
+            <div class="config-section">
+              <div class="config-section-label">SiGREEN credentials</div>
+              <p class="config-card-subtitle" style="margin: 0 0 1rem 0; font-size: 0.875rem;">Used to send PCF values to SiGREEN. Credentials are validated when you save.</p>
+              <div class="form-group">
+                <label for="sigreen_factory_name">Factory name</label>
+                <input type="text" id="sigreen_factory_name" name="sigreen_factory_name" placeholder="OPC">
+                <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">Factory name in SiGREEN (e.g. OPC, Germany, WvSC).</p>
+              </div>
+              <div class="form-group">
+                <label for="sigreen_base_url">Base URL</label>
+                <input type="url" id="sigreen_base_url" name="sigreen_base_url" placeholder="https://app-uat.sigreen-playground.siemens.cloud/api">
+              </div>
+              <div class="form-group">
+                <label for="sigreen_client_id">Client ID</label>
+                <input type="password" id="sigreen_client_id" name="sigreen_client_id" placeholder="SiGREEN API client ID">
+              </div>
+              <div class="form-group">
+                <label for="sigreen_client_secret">Client Secret</label>
+                <input type="password" id="sigreen_client_secret" name="sigreen_client_secret" placeholder="Leave blank to keep current secret">
+              </div>
+              <div class="form-group">
+                <div class="config-section-label" style="margin-top: 1.25rem;">Carbon intensity (gCO₂/kWh)</div>
+                <p class="config-card-subtitle" style="margin: 0 0 1rem 0; font-size: 0.875rem;">Used for AAS-based PCF calculation. Choose a constant value or fetch from Green Grid Compass.</p>
+                <div class="carbon-intensity-options">
+                  <label class="radio-option">
+                    <input type="radio" name="carbon_intensity_source" value="constant" id="carbon_intensity_constant">
+                    <span>Constant value</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="carbon_intensity_source" value="green_grid_compass" id="carbon_intensity_ggc">
+                    <span>Green Grid Compass</span>
+                  </label>
+                </div>
+                <div id="carbon_intensity_constant_group" class="form-group" style="margin-top: 0.75rem;">
+                  <label for="carbon_intensity_constant_gco2">Constant value (gCO₂/kWh)</label>
+                  <input type="number" id="carbon_intensity_constant_gco2" name="carbon_intensity_constant_gco2" min="0" step="1" placeholder="350">
+                  <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">Applied when using constant carbon intensity.</p>
+                </div>
+              </div>
+              <div class="form-group" style="margin-top: 1.25rem;">
+                <div class="config-section-label">Product Carbon Footprint (PCF) report</div>
+                <label class="radio-option" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                  <input type="checkbox" id="pcf_include_bom" name="pcf_include_bom" checked>
+                  <span>Include upstream material carbon footprint (BOM) in total product PCF</span>
+                </label>
+                <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">When enabled, material carbon footprints from SiGREEN (production + distribution stages) are added to the total PCF reported to SiGREEN. When disabled, only process energy (BOP) is included.</p>
+              </div>
+            </div>
+            <div class="config-actions">
+              <button type="submit" class="btn-primary">Save configuration</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="panel-sap" class="pcf-provider-panel collapsed">
+          <div class="config-section">
+            <p class="config-card-subtitle" style="margin: 0; font-size: 0.875rem;">SAP integration is not yet available. Configuration options will appear here in a future release.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Users (Microsoft sign-in allowlist) ── -->
+      <div id="tabpanel-users" role="tabpanel" class="config-tabpanel" aria-labelledby="tab-btn-users" hidden>
+        <p class="config-card-subtitle" style="margin-bottom: 1rem;">Users who may sign in with their Microsoft work account. Bootstrap administrators can be set with <code style="font-size:0.85em;">ENTRA_BOOTSTRAP_ADMIN_EMAILS</code> in the environment.</p>
+        <div id="users-admin-msg" class="config-message" style="display:none;"></div>
+        <div class="config-section">
+          <div class="config-section-label">Add or update a user</div>
+          <div class="form-group" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end;">
+            <div>
+              <label for="users-admin-email">Email (Entra UPN)</label>
+              <input type="email" id="users-admin-email" placeholder="user@company.com" style="min-width: 220px;">
+            </div>
+            <div>
+              <label for="users-admin-role">Role</label>
+              <select id="users-admin-role">
+                <option value="user">User</option>
+                <option value="admin">Administrator</option>
+              </select>
+            </div>
+            <button type="button" id="users-admin-add" class="btn-primary">Save user</button>
+          </div>
+        </div>
+        <div class="config-section" style="margin-top: 1.5rem;">
+          <div class="config-section-label">Directory</div>
+          <div id="users-admin-table-wrap" style="overflow-x: auto;">
+            <table class="users-admin-table" style="width:100%; border-collapse: collapse; font-size: 0.875rem;">
+              <thead>
+                <tr>
+                  <th style="text-align:left; padding: 0.5rem; border-bottom: 1px solid var(--config-border, #333);">Email</th>
+                  <th style="text-align:left; padding: 0.5rem; border-bottom: 1px solid var(--config-border, #333);">Role</th>
+                  <th style="text-align:left; padding: 0.5rem; border-bottom: 1px solid var(--config-border, #333);">Display name</th>
+                  <th style="text-align:right; padding: 0.5rem; border-bottom: 1px solid var(--config-border, #333);"></th>
+                </tr>
+              </thead>
+              <tbody id="users-admin-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    var messageEl = document.getElementById('message');
+    var currentConfig = {};
+
+    var DS_LABELS = { mes: 'Manufacturing Execution System (MES)', aas: 'Asset Administration Shell (AAS)' };
+    var PCF_LABELS = { sigreen: 'SiGREEN', sap: 'SAP' };
+
+    /* ── Tab switching ── */
+    var tabs = document.querySelectorAll('.config-tab');
+    var tabpanels = document.querySelectorAll('.config-tabpanel');
+
+    function setActiveTab(name) {
+      tabs.forEach(function(t) {
+        var isActive = t.getAttribute('data-tab') === name;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', isActive);
+      });
+      tabpanels.forEach(function(p) {
+        var isActive = p.id === 'tabpanel-' + name;
+        p.classList.toggle('active', isActive);
+        p.hidden = !isActive;
+      });
+    }
+
+    tabs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var tab = t.getAttribute('data-tab');
+        setActiveTab(tab);
+        if (tab === 'overview') renderOverview();
+        else if (tab === 'datasource' || tab === 'pcf') restoreProviderSelection();
+        else if (tab === 'users') refreshUsersDirectory();
+      });
+    });
+
+    /* ── Restore provider selection from saved config ── */
+    function restoreProviderSelection() {
+      var ds = currentConfig.data_source || '';
+      var pcfTool = currentConfig.pcf_tool || '';
+      [['btn-ds-mes', 'panel-ds-mes'], ['btn-ds-aas', 'panel-ds-aas']].forEach(function(pair, i) {
+        var btn = document.getElementById(pair[0]);
+        var panel = document.getElementById(pair[1]);
+        var isSelected = (i === 0 && ds === 'mes') || (i === 1 && ds === 'aas');
+        if (btn) btn.classList.toggle('active', isSelected);
+        if (panel) {
+          panel.classList.toggle('collapsed', !isSelected);
+          panel.style.maxHeight = isSelected ? 'none' : '0';
+        }
+      });
+      [['btn-provider-sigreen', 'panel-sigreen'], ['btn-provider-sap', 'panel-sap']].forEach(function(pair, i) {
+        var btn = document.getElementById(pair[0]);
+        var panel = document.getElementById(pair[1]);
+        var isSelected = (i === 0 && pcfTool === 'sigreen') || (i === 1 && pcfTool === 'sap');
+        if (btn) btn.classList.toggle('active', isSelected);
+        if (panel) {
+          panel.classList.toggle('collapsed', !isSelected);
+          panel.style.maxHeight = isSelected ? 'none' : '0';
+        }
+      });
+    }
+
+    /* ── Expand / collapse helpers ── */
+    function collapsePanel(btn, panel) {
+      if (panel.classList.contains('collapsed')) return;
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+      requestAnimationFrame(function() { panel.style.maxHeight = '0'; });
+      panel.classList.add('collapsed');
+      btn.classList.remove('active');
+    }
+
+    function expandPanel(btn, panel) {
+      if (!panel.classList.contains('collapsed')) return;
+      panel.classList.remove('collapsed');
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+      var done = function() {
+        if (!panel.classList.contains('collapsed')) panel.style.maxHeight = 'none';
+        panel.removeEventListener('transitionend', done);
+      };
+      panel.addEventListener('transitionend', done);
+      btn.classList.add('active');
+    }
+
+    /* Exclusive groups: only one choice per group; click active again to deselect */
+    var exclusiveGroups = [
+      { buttons: ['btn-ds-mes', 'btn-ds-aas'], panels: ['panel-ds-mes', 'panel-ds-aas'], deselectPayload: { data_source: '' } },
+      { buttons: ['btn-provider-sigreen', 'btn-provider-sap'], panels: ['panel-sigreen', 'panel-sap'], deselectPayload: { pcf_tool: '' } }
+    ];
+
+    exclusiveGroups.forEach(function(group) {
+      group.buttons.forEach(function(btnId, idx) {
+        document.getElementById(btnId).addEventListener('click', function() {
+          var btn = document.getElementById(btnId);
+          var panel = document.getElementById(group.panels[idx]);
+          var isOpen = !panel.classList.contains('collapsed');
+          group.buttons.forEach(function(otherId, otherIdx) {
+            if (otherIdx !== idx) {
+              collapsePanel(
+                document.getElementById(otherId),
+                document.getElementById(group.panels[otherIdx])
+              );
+            }
+          });
+          if (isOpen) {
+            collapsePanel(btn, panel);
+            if (group.deselectPayload) {
+              saveConfig(group.deselectPayload).then(function() { renderOverview(); });
+            }
+          } else {
+            expandPanel(btn, panel);
+          }
+        });
+      });
+    });
+
+    /* ── Messages ── */
+    function showMessage(text, type) {
+      messageEl.textContent = text;
+      messageEl.className = 'config-message visible ' + type;
+      if (type === 'success') {
+        setTimeout(function() { messageEl.classList.remove('visible'); }, 3500);
+      }
+    }
+
+    /* ── Save helper ── */
+    async function saveConfig(payload) {
+      var res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.status === 401) { window.location.href = '/login'; return false; }
+      var data = await res.json().catch(function() { return {}; });
+      if (!res.ok) { showMessage(data.detail || 'Failed to save configuration.', 'error'); return false; }
+      Object.assign(currentConfig, payload);
+      if (data.config) Object.assign(currentConfig, data.config);
+      showMessage('Configuration saved successfully.', 'success');
+      renderOverview();
+      return true;
+    }
+
+    /* ── Overview dashboard ── */
+    var svgDS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
+    var svgPCF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c-2.5-1.5-4-4-4-6 0-3 1.5-6 4-9 2.5 3 4 6 4 9 0 2-1.5 4.5-4 6z" transform="rotate(52 12 12) translate(-2.5 0.5)"/><path d="M12 22c-2.5-1.5-4-4-4-6 0-3 1.5-6 4-9 2.5 3 4 6 4 9 0 2-1.5 4.5-4 6z" transform="rotate(115 12 12) translate(2 -2)"/><path d="M12 22c-2.5-1.5-4-4-4-6 0-3 1.5-6 4-9 2.5 3 4 6 4 9 0 2-1.5 4.5-4 6z" transform="rotate(178 12 12) translate(-2.5 -0.5)"/><path d="M12 22c-2.5-1.5-4-4-4-6 0-3 1.5-6 4-9 2.5 3 4 6 4 9 0 2-1.5 4.5-4 6z" transform="rotate(248 12 12) translate(2 1)"/><path d="M12 22c-2.5-1.5-4-4-4-6 0-3 1.5-6 4-9 2.5 3 4 6 4 9 0 2-1.5 4.5-4 6z" transform="rotate(322 12 12) translate(-1 2)"/></svg>';
+    var svgWO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>';
+    var svgEnergy = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+    var svgCF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>';
+    var svgCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+
+    function badgeHtml(isSet) {
+      var cls = isSet ? 'configured' : 'pending';
+      var label = isSet ? 'Configured' : 'Pending';
+      return '<span class="overview-badge ' + cls + '"><span class="overview-badge-dot"></span>' + label + '</span>';
+    }
+
+    function fmtNum(v) {
+      if (v === null || v === undefined) return '—';
+      return typeof v === 'number' ? v.toLocaleString(undefined, { maximumFractionDigits: 2 }) : String(v);
+    }
+
+    function statCard(icon, iconCls, label, value, unit) {
+      return '<div class="stat-card"><div class="stat-card-icon ' + iconCls + '">' + icon + '</div>'
+        + '<div class="stat-card-body"><span class="stat-card-value">' + value + (unit ? ' <span class="stat-card-unit">' + unit + '</span>' : '') + '</span>'
+        + '<span class="stat-card-label">' + label + '</span></div></div>';
+    }
+
+    async function renderOverview() {
+      var dash = document.getElementById('overview-dashboard');
+      var ds = currentConfig.data_source || '';
+      var pcfTool = currentConfig.pcf_tool || '';
+
+      var html = '';
+
+      /* ── Integration status ── */
+      html += '<div class="overview-section-label">Integration Status</div>';
+      html += '<div class="overview-grid">';
+
+      html += '<div class="overview-card ' + (ds ? 'configured' : 'pending') + '">';
+      html += '<div class="overview-card-header"><div class="overview-card-icon ds">' + svgDS + '</div>';
+      html += '<div><p class="overview-card-title">Data Source</p>';
+      html += '<p class="overview-card-value' + (ds ? '' : ' not-set') + '">' + (ds ? DS_LABELS[ds] : 'Not configured') + '</p></div></div>';
+      html += '<div class="overview-card-badge-row">';
+      html += badgeHtml(ds);
+      html += '</div>';
+      if (ds === 'aas') {
+        var aasStatus = currentConfig.aas_status || {};
+        var aasType = (aasStatus.aas_type || currentConfig.aas_type || '').trim();
+        if (aasType) html += '<div class="overview-card-factory">AAS type: ' + aasType + '</div>';
+        html += '<div class="overview-card-actions overview-card-actions-bottom">';
+        html += '<span id="aas-process-status" class="aas-status"></span>';
+        html += '<button type="button" class="btn-primary btn-sm" id="btn-aas-process-shells">Process complete productions</button>';
+        html += '</div>';
+      }
+      html += '</div>';
+
+      var factoryName = (currentConfig.sigreen_factory_name || '').trim() || 'OPC';
+      var pcfValue = pcfTool ? PCF_LABELS[pcfTool] : 'Not configured';
+      html += '<div class="overview-card ' + (pcfTool ? 'configured' : 'pending') + '">';
+      html += '<div class="overview-card-header"><div class="overview-card-icon pcf">' + svgPCF + '</div>';
+      html += '<div><p class="overview-card-title">PCF Management Tool</p>';
+      html += '<p class="overview-card-value' + (pcfTool ? '' : ' not-set') + '">' + pcfValue + '</p></div></div>';
+      html += badgeHtml(pcfTool);
+      if (pcfTool === 'sigreen') {
+        html += '<div class="overview-card-factory">Factory: ' + factoryName + '</div>';
+        var factoryId = (currentConfig.sigreen_factory_id || '').trim();
+        if (factoryId) html += '<div class="overview-card-factory">Factory UUID: ' + factoryId + '</div>';
+      }
+      html += '</div>';
+
+      html += '</div>';
+
+      /* Guidance */
+      if (!ds || !pcfTool) {
+        var guideTitle, guideSub, guideLabel;
+        if (!ds) {
+          guideTitle = 'Set up your data source';
+          guideSub = 'Choose whether consumption data comes from a Manufacturing Execution System or an Asset Administration Shell.';
+          guideLabel = 'Configure data source interface';
+        } else {
+          guideTitle = 'Connect a PCF management tool';
+          guideSub = 'Select SiGREEN or SAP to configure where computed carbon footprints are published.';
+          guideLabel = 'Configure PCF management tool interface';
+        }
+        html += '<div class="overview-guide">';
+        html += '<div class="overview-guide-text"><p class="overview-guide-title">' + guideTitle + '</p>';
+        html += '<p class="overview-guide-sub">' + guideSub + '</p></div>';
+        html += '<button type="button" class="btn-primary overview-guide-btn" id="btn-guide">' + guideLabel + '</button>';
+        html += '</div>';
+      }
+
+      /* ── Stats placeholder while loading ── */
+      html += '<div id="overview-stats-area"><div class="overview-section-label" style="margin-top:1.75rem;">Activity &amp; Statistics</div>';
+      html += '<p class="config-card-subtitle">Loading...</p></div>';
+
+      dash.innerHTML = html;
+
+      var guideBtn = document.getElementById('btn-guide');
+      if (guideBtn) {
+        guideBtn.addEventListener('click', function() {
+          if (!ds) setActiveTab('datasource');
+          else if (!pcfTool) setActiveTab('pcf');
+        });
+      }
+
+      /* AAS: Process shells button */
+      var aasProcessBtn = document.getElementById('btn-aas-process-shells');
+      var aasStatusEl = document.getElementById('aas-process-status');
+      if (aasProcessBtn) {
+        aasProcessBtn.addEventListener('click', async function() {
+          aasProcessBtn.disabled = true;
+          if (aasStatusEl) aasStatusEl.textContent = 'Processing...';
+          try {
+            var res = await fetch('api/aas/process_shells', { method: 'POST' });
+            var data = await res.json().catch(function() { return {}; });
+            if (!res.ok) {
+              if (aasStatusEl) aasStatusEl.textContent = 'Error: ' + (data.detail || res.status);
+              return;
+            }
+            var msg = 'Processed: ' + (data.processed || 0) + ', Skipped: ' + (data.skipped || 0);
+            if (data.errors && data.errors.length) msg += ' (' + data.errors.length + ' errors)';
+            if (aasStatusEl) aasStatusEl.textContent = msg;
+            renderOverview();
+          } catch (err) {
+            if (aasStatusEl) aasStatusEl.textContent = 'Failed';
+          } finally {
+            aasProcessBtn.disabled = false;
+          }
+        });
+      }
+
+      /* Fetch stats */
+      try {
+        var res = await fetch('/api/overview_stats');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var s = await res.json();
+        var area = document.getElementById('overview-stats-area');
+        var sh = '<div class="overview-section-label" style="margin-top:1.75rem;">Activity &amp; Statistics</div>';
+
+        /* KPI row */
+        sh += '<div class="stat-grid">';
+        sh += statCard(svgWO, 'wo', 'Work Orders', fmtNum(s.work_order_count), '');
+        sh += statCard(svgEnergy, 'energy', 'Total Energy Consumed', fmtNum(s.total_energy_kwh), 'kWh');
+        sh += statCard(svgCF, 'cf', 'Total Carbon Footprint', fmtNum(s.total_carbon_footprint_kg), 'kg CO\u2082e');
+        sh += statCard(svgCheck, 'pcf-done', 'PCFs Computed', fmtNum(s.pcf_count) + ' / ' + fmtNum(s.work_order_count), '');
+        sh += '</div>';
+
+        /* Work orders table */
+        if (s.work_orders && s.work_orders.length > 0) {
+          sh += '<div class="overview-section-label" style="margin-top:1.75rem;">Work Order Summary</div>';
+          sh += '<div class="overview-table-wrap"><table class="overview-table">';
+          sh += '<thead><tr><th>Work Order</th><th>Operations</th><th>Materials</th><th>Energy</th><th>Carbon Footprint</th></tr></thead><tbody>';
+          s.work_orders.forEach(function(wo) {
+            sh += '<tr>';
+            sh += '<td class="overview-table-wo">' + wo.name + '</td>';
+            sh += '<td>' + wo.operations + '</td>';
+            sh += '<td>' + wo.materials + '</td>';
+            sh += '<td>' + fmtNum(wo.energy_kwh) + ' <span class="stat-card-unit">kWh</span></td>';
+            sh += '<td>' + fmtNum(wo.carbon_footprint_kg) + ' <span class="stat-card-unit">kg CO\u2082e</span></td>';
+            sh += '</tr>';
+          });
+          sh += '</tbody></table></div>';
+        }
+
+        /* Product Carbon Footprint table */
+        if (s.products && s.products.length > 0) {
+          sh += '<div class="overview-section-label" style="margin-top:1.75rem;">Product Carbon Footprint Summary</div>';
+          sh += '<div class="overview-table-wrap"><table class="overview-table">';
+          sh += '<thead><tr><th>Work Order</th><th>Factory</th><th>Batch</th><th>Quantity</th><th>Processes</th><th>Materials</th><th>Own Manufacturing Footprint</th></tr></thead><tbody>';
+          s.products.forEach(function(p) {
+            sh += '<tr>';
+            sh += '<td class="overview-table-wo">' + p.work_order + '</td>';
+            sh += '<td>' + (p.factory || '<span class="overview-not-set">\u2014</span>') + '</td>';
+            sh += '<td>' + (p.batch_number || '<span class="overview-not-set">\u2014</span>') + '</td>';
+            sh += '<td>' + (p.quantity !== null ? fmtNum(p.quantity) : '<span class="overview-not-set">\u2014</span>') + '</td>';
+            sh += '<td>' + p.processes + '</td>';
+            sh += '<td>' + p.materials + '</td>';
+            sh += '<td>' + fmtNum(p.pcf_value) + ' <span class="stat-card-unit">' + (p.emission_unit || 'kg CO\u2082e') + '</span></td>';
+            sh += '</tr>';
+          });
+          sh += '</tbody></table></div>';
+        }
+
+        area.innerHTML = sh;
+      } catch (e) {
+        var area = document.getElementById('overview-stats-area');
+        if (area) area.innerHTML = '<div class="overview-section-label" style="margin-top:1.75rem;">Activity &amp; Statistics</div><p class="config-card-subtitle">Unable to load statistics.</p>';
+      }
+    }
+
+    /* ── Load config ── */
+    async function loadConfig() {
+      var res = await fetch('/api/config');
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      currentConfig = await res.json();
+      document.getElementById('sigreen_factory_name').value = currentConfig.sigreen_factory_name || '';
+      document.getElementById('sigreen_base_url').value = currentConfig.sigreen_base_url || '';
+      document.getElementById('sigreen_client_id').value = currentConfig.sigreen_client_id || '';
+      document.getElementById('sigreen_client_secret').value = currentConfig.sigreen_client_secret || '';
+      document.getElementById('aas_type').value = currentConfig.aas_type || 'AAS (AssetFox)';
+      document.getElementById('aas_base_url').value = currentConfig.aas_base_url || '';
+      document.getElementById('aas_client_id').value = currentConfig.aas_client_id || '';
+      document.getElementById('aas_client_secret').value = currentConfig.aas_client_secret || '';
+      document.getElementById('aas_check_period_minutes').value = currentConfig.aas_check_period_minutes ?? '';
+      var carbonSource = currentConfig.carbon_intensity_source || 'constant';
+      if (carbonSource !== 'constant' && carbonSource !== 'green_grid_compass') carbonSource = 'constant';
+      var radio = document.querySelector('input[name="carbon_intensity_source"][value="' + carbonSource + '"]');
+      if (radio) radio.checked = true;
+      document.getElementById('carbon_intensity_constant_gco2').value = currentConfig.carbon_intensity_constant_gco2 ?? 350;
+      var pcfIncludeBom = document.getElementById('pcf_include_bom');
+      if (pcfIncludeBom) pcfIncludeBom.checked = currentConfig.pcf_include_bom !== false;
+      updateCarbonIntensityConstantVisibility();
+      restoreProviderSelection();
+      renderOverview();
+    }
+
+    function updateCarbonIntensityConstantVisibility() {
+      var isConstant = document.querySelector('input[name="carbon_intensity_source"]:checked')?.value === 'constant';
+      var group = document.getElementById('carbon_intensity_constant_group');
+      if (group) group.style.display = isConstant ? '' : 'none';
+    }
+
+    /* ── Save: MES data source ── */
+    document.getElementById('btn-save-ds-mes').addEventListener('click', async function() {
+      try { await saveConfig({ data_source: 'mes' }); }
+      catch (err) { showMessage('Something went wrong. Please try again.', 'error'); }
+    });
+
+    /* ── Save: AAS data source ── */
+    document.getElementById('aas-config-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var periodVal = parseFloat(document.getElementById('aas_check_period_minutes').value);
+      if (isNaN(periodVal) || periodVal < 0) periodVal = 0;
+      try {
+        await saveConfig({
+          data_source: 'aas',
+          aas_type: document.getElementById('aas_type').value,
+          aas_asset_name: '',
+          aas_base_url: document.getElementById('aas_base_url').value.trim(),
+          aas_client_id: document.getElementById('aas_client_id').value.trim(),
+          aas_client_secret: document.getElementById('aas_client_secret').value.trim(),
+          aas_check_period_minutes: periodVal
+        });
+      } catch (err) { showMessage('Something went wrong. Please try again.', 'error'); }
+    });
+
+    /* ── Save: SiGREEN ── */
+    document.getElementById('config-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var carbonSource = document.querySelector('input[name="carbon_intensity_source"]:checked')?.value || 'constant';
+      var constantVal = parseFloat(document.getElementById('carbon_intensity_constant_gco2').value);
+      if (isNaN(constantVal) || constantVal < 0) constantVal = 350;
+      try {
+        await saveConfig({
+          pcf_tool: 'sigreen',
+          sigreen_factory_name: document.getElementById('sigreen_factory_name').value.trim(),
+          sigreen_base_url: document.getElementById('sigreen_base_url').value.trim(),
+          sigreen_client_id: document.getElementById('sigreen_client_id').value.trim(),
+          sigreen_client_secret: document.getElementById('sigreen_client_secret').value.trim(),
+          carbon_intensity_source: carbonSource,
+          carbon_intensity_constant_gco2: constantVal,
+          pcf_include_bom: document.getElementById('pcf_include_bom').checked
+        });
+      } catch (err) { showMessage('Something went wrong. Please try again.', 'error'); }
+    });
+
+    /* ── Carbon intensity radio toggle ── */
+    document.querySelectorAll('input[name="carbon_intensity_source"]').forEach(function(r) {
+      r.addEventListener('change', updateCarbonIntensityConstantVisibility);
+    });
+
+    /* ── Microsoft / Entra user directory (admins only) ── */
+    function showUsersAdminMsg(text, isError) {
+      var el = document.getElementById('users-admin-msg');
+      if (!el) return;
+      el.textContent = text || '';
+      el.className = 'config-message' + (isError ? ' error' : '');
+      el.style.display = text ? 'block' : 'none';
+    }
+
+    async function refreshUsersDirectory() {
+      var tbody = document.getElementById('users-admin-tbody');
+      if (!tbody) return;
+      showUsersAdminMsg('', false);
+      var res = await fetch('/api/admin/users');
+      if (res.status === 403) {
+        showUsersAdminMsg('You need administrator access to manage users.', true);
+        tbody.innerHTML = '';
+        return;
+      }
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      var data = await res.json();
+      var users = data.users || [];
+      tbody.innerHTML = '';
+      users.forEach(function(u) {
+        var tr = document.createElement('tr');
+        ['email', 'role', 'display_name'].forEach(function(k) {
+          var td = document.createElement('td');
+          td.style.padding = '0.5rem';
+          td.style.borderBottom = '1px solid rgba(128,128,128,.2)';
+          td.textContent = (u[k] !== undefined && u[k] !== null) ? String(u[k]) : '';
+          tr.appendChild(td);
+        });
+        var tdAct = document.createElement('td');
+        tdAct.style.padding = '0.5rem';
+        tdAct.style.borderBottom = '1px solid rgba(128,128,128,.2)';
+        tdAct.style.textAlign = 'right';
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'log-action-btn';
+        del.textContent = 'Remove';
+        del.dataset.email = String(u.email || '');
+        del.addEventListener('click', async function() {
+          var email = del.dataset.email;
+          if (!email || !confirm('Remove access for ' + email + '?')) return;
+          var dres = await fetch('/api/admin/users/' + encodeURIComponent(email), { method: 'DELETE' });
+          if (dres.status === 401) { window.location.href = '/login'; return; }
+          if (!dres.ok) {
+            var j = await dres.json().catch(function() { return {}; });
+            showUsersAdminMsg((j.detail) || 'Remove failed', true);
+            return;
+          }
+          refreshUsersDirectory();
+        });
+        tdAct.appendChild(del);
+        tr.appendChild(tdAct);
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function initUsersAdminTab() {
+      var tabBtn = document.getElementById('tab-btn-users');
+      if (!tabBtn) return;
+      var res = await fetch('/api/auth/session');
+      if (res.status !== 200) return;
+      var sess = await res.json();
+      if (!sess.is_admin) return;
+      tabBtn.hidden = false;
+      var addBtn = document.getElementById('users-admin-add');
+      if (addBtn && !addBtn.dataset.wired) {
+        addBtn.dataset.wired = '1';
+        addBtn.addEventListener('click', async function() {
+          var emailEl = document.getElementById('users-admin-email');
+          var roleEl = document.getElementById('users-admin-role');
+          var email = (emailEl && emailEl.value) ? emailEl.value.trim() : '';
+          var role = (roleEl && roleEl.value) ? roleEl.value : 'user';
+          if (!email) { showUsersAdminMsg('Email is required.', true); return; }
+          var r = await fetch('/api/admin/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, role: role })
+          });
+          if (r.status === 401) { window.location.href = '/login'; return; }
+          if (!r.ok) {
+            var j = await r.json().catch(function() { return {}; });
+            showUsersAdminMsg(j.detail || 'Save failed', true);
+            return;
+          }
+          showUsersAdminMsg('User saved.', false);
+          if (emailEl) emailEl.value = '';
+          refreshUsersDirectory();
+        });
+      }
+    }
+
+    loadConfig();
+    initUsersAdminTab();
+
+    /* ── Log viewer ── */
+    var logLastId = 0;
+    var logAutoScroll = true;
+    var logPollTimer = null;
+    var logPollInterval = 3000;
+    var logFilter = 'ALL';
+
+    function escapeHtml(s) {
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(s));
+      return d.innerHTML;
+    }
+
+    function formatLogTime(iso) {
+      try {
+        var d = new Date(iso);
+        return d.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          + '.' + String(d.getMilliseconds()).padStart(3, '0');
+      } catch (e) { return iso; }
+    }
+
+    function levelClass(level) {
+      switch (level) {
+        case 'ERROR': case 'CRITICAL': return 'log-error';
+        case 'WARNING': return 'log-warn';
+        case 'DEBUG': return 'log-debug';
+        default: return 'log-info';
+      }
+    }
+
+    function shouldShow(level) {
+      if (logFilter === 'ALL') return true;
+      return level === logFilter;
+    }
+
+    function renderLogEntry(entry) {
+      var row = document.createElement('div');
+      row.className = 'log-row ' + levelClass(entry.level);
+      row.dataset.level = entry.level;
+      if (!shouldShow(entry.level)) row.style.display = 'none';
+
+      var html = '<span class="log-time">' + formatLogTime(entry.timestamp) + '</span>'
+        + '<span class="log-level-badge ' + levelClass(entry.level) + '">' + entry.level + '</span>'
+        + '<span class="log-source">' + escapeHtml(entry.logger) + '</span>'
+        + '<span class="log-msg">' + escapeHtml(entry.message) + '</span>';
+
+      if (entry.traceback) {
+        html += '<button class="log-tb-toggle" onclick="this.nextElementSibling.classList.toggle(\'log-tb-visible\');this.textContent=this.nextElementSibling.classList.contains(\'log-tb-visible\')?\'Hide traceback\':\'Show traceback\'">'
+          + 'Show traceback</button>';
+        html += '<pre class="log-tb">' + escapeHtml(entry.traceback) + '</pre>';
+      }
+      row.innerHTML = html;
+      return row;
+    }
+
+    async function fetchLogs() {
+      try {
+        var res = await fetch('/api/logs?after=' + logLastId);
+        if (!res.ok) return;
+        var data = await res.json();
+        var container = document.getElementById('log-entries');
+        if (!container) return;
+        var entries = data.entries || [];
+        if (entries.length === 0) return;
+
+        entries.forEach(function(entry) {
+          container.appendChild(renderLogEntry(entry));
+          logLastId = entry.id;
+        });
+
+        updateLogCount();
+
+        if (logAutoScroll) {
+          container.scrollTop = container.scrollHeight;
+        }
+      } catch (e) { /* silently retry next poll */ }
+    }
+
+    function updateLogCount() {
+      var container = document.getElementById('log-entries');
+      var countEl = document.getElementById('log-count');
+      if (!container || !countEl) return;
+      var total = container.children.length;
+      var visible = 0;
+      for (var i = 0; i < container.children.length; i++) {
+        if (container.children[i].style.display !== 'none') visible++;
+      }
+      countEl.textContent = logFilter === 'ALL'
+        ? total + ' entries'
+        : visible + ' / ' + total + ' entries';
+    }
+
+    function setLogFilter(level) {
+      logFilter = level;
+      document.querySelectorAll('.log-filter-btn').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.level === level);
+      });
+      var container = document.getElementById('log-entries');
+      if (!container) return;
+      for (var i = 0; i < container.children.length; i++) {
+        var row = container.children[i];
+        row.style.display = shouldShow(row.dataset.level) ? '' : 'none';
+      }
+      updateLogCount();
+    }
+
+    function clearLogs() {
+      var container = document.getElementById('log-entries');
+      if (container) container.innerHTML = '';
+      logLastId = 0;
+      updateLogCount();
+    }
+
+    function toggleLogPoll() {
+      var btn = document.getElementById('log-auto-btn');
+      if (logPollTimer) {
+        clearInterval(logPollTimer);
+        logPollTimer = null;
+        if (btn) { btn.textContent = 'Auto-refresh: OFF'; btn.classList.remove('active'); }
+      } else {
+        logPollTimer = setInterval(fetchLogs, logPollInterval);
+        if (btn) { btn.textContent = 'Auto-refresh: ON'; btn.classList.add('active'); }
+      }
+    }
+
+    function toggleLogPanel() {
+      var body = document.getElementById('log-panel-body');
+      var chevron = document.getElementById('log-panel-chevron');
+      if (!body) return;
+      var isOpen = body.style.display !== 'none';
+      body.style.display = isOpen ? 'none' : '';
+      if (chevron) chevron.classList.toggle('log-chevron-open', !isOpen);
+      if (!isOpen && !logPollTimer) {
+        fetchLogs();
+        logPollTimer = setInterval(fetchLogs, logPollInterval);
+        var btn = document.getElementById('log-auto-btn');
+        if (btn) { btn.textContent = 'Auto-refresh: ON'; btn.classList.add('active'); }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchLogs();
+      logPollTimer = setInterval(fetchLogs, logPollInterval);
+      var fsBtn = document.getElementById('log-fullscreen-btn');
+      if (fsBtn) {
+        fsBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var panel = document.querySelector('.log-panel');
+          if (!panel) return;
+          var isFs = panel.classList.toggle('log-panel-fullscreen');
+          fsBtn.textContent = isFs ? 'Exit full screen' : 'Full screen';
+        });
+      }
+    });
+  </script>
+
+  <div class="config-main" style="padding-top: 0;">
+    <div class="log-panel">
+      <div class="log-panel-header" onclick="toggleLogPanel()">
+        <div class="log-panel-title-row">
+          <svg id="log-panel-chevron" class="log-chevron log-chevron-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <svg class="log-panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>Application Logs</span>
+          <span id="log-count" class="log-count">0 entries</span>
+        </div>
+      </div>
+      <div id="log-panel-body" class="log-panel-body">
+        <div class="log-toolbar">
+          <div class="log-filter-group">
+            <button class="log-filter-btn active" data-level="ALL" onclick="setLogFilter('ALL')">All</button>
+            <button class="log-filter-btn" data-level="INFO" onclick="setLogFilter('INFO')">Info</button>
+            <button class="log-filter-btn" data-level="WARNING" onclick="setLogFilter('WARNING')">Warning</button>
+            <button class="log-filter-btn" data-level="ERROR" onclick="setLogFilter('ERROR')">Error</button>
+          </div>
+          <div class="log-actions">
+            <button id="log-fullscreen-btn" class="log-action-btn log-action-fullscreen" type="button" title="Toggle full screen">Full screen</button>
+            <button id="log-auto-btn" class="log-action-btn active" onclick="toggleLogPoll()">Auto-refresh: ON</button>
+            <button class="log-action-btn" onclick="fetchLogs()">Refresh</button>
+            <button class="log-action-btn log-action-clear" onclick="clearLogs()">Clear</button>
+          </div>
+        </div>
+        <div id="log-entries" class="log-entries"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){var KEY='pcf-theme';var SUN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';var MOON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';function get(){return localStorage.getItem(KEY)||'light';}function apply(theme){if(theme==='light')document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');localStorage.setItem(KEY,theme);var btn=document.getElementById('theme-toggle');if(btn){btn.innerHTML=theme==='dark'?SUN:MOON;btn.setAttribute('aria-label',theme==='dark'?'Switch to light theme':'Switch to dark theme');}}apply(get());var btn=document.getElementById('theme-toggle');if(btn&&!btn.dataset.themeWired){btn.dataset.themeWired='1';btn.addEventListener('click',function(){apply(get()==='dark'?'light':'dark');});}})();
+  </script>
+  <div class="config-partner-logos" aria-hidden="true">
+    <img src="/static/manufacturing-x-logo.svg" alt="Manufacturing-X" class="config-partner-logo">
+    <img src="/static/factory-x-logo.svg" alt="Factory-X" class="config-partner-logo">
+    <img src="/static/bmwe_logo.png" alt="BMW E" class="config-partner-logo">
+  </div>
+    </div>
+  </div>
+</body>
+</html>
