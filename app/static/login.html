@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in – PCF Creator</title>
+  <script>
+    (function(){var t=localStorage.getItem('pcf-theme')||'light';if(t==='light')document.documentElement.setAttribute('data-theme','light');})();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/auth.css?v=4">
+</head>
+<body class="auth-login-page">
+  <button type="button" id="theme-toggle" class="auth-theme-toggle" aria-label="Switch to light theme" title="Switch theme">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
+  <div class="auth-partner-logos" aria-hidden="true">
+    <img src="/static/manufacturing-x-logo.svg" alt="Manufacturing-X" class="auth-partner-logo">
+    <img src="/static/factory-x-logo.svg" alt="Factory-X" class="auth-partner-logo">
+    <img src="/static/bmwe_logo.png" alt="BMW E" class="auth-partner-logo">
+  </div>
+  <div class="auth-brand">
+    <img src="/static/WvSC_logo.png" alt="WvSC" class="auth-brand-logo">
+    <div class="auth-brand-text">
+      <h1 class="auth-brand-title">PCF Calculator Hub</h1>
+      <p class="auth-brand-tagline">REST API for production and consumption data, PCF computation, and SiGREEN integration.</p>
+    </div>
+  </div>
+  <main class="auth-card">
+    <h2 class="auth-card-heading">Sign in</h2>
+    <p class="subtitle">Sign in with your Microsoft work account or local credentials.</p>
+    <div id="message" class="message" style="display: none;"></div>
+
+    <div id="ms-signin-block" class="auth-ms-block" style="display: none;">
+      <a id="ms-signin-link" href="/api/auth/microsoft/login" class="btn btn-microsoft">
+        <svg class="auth-ms-logo" width="20" height="20" viewBox="0 0 21 21" aria-hidden="true"><path fill="#f25022" d="M0 0h10v10H0z"/><path fill="#00a4ef" d="M11 0h10v10H11z"/><path fill="#7fba00" d="M0 11h10v10H0z"/><path fill="#ffb900" d="M11 11h10v10H11z"/></svg>
+        Sign in with Microsoft
+      </a>
+      <p id="ms-signin-hint" class="auth-ms-hint"></p>
+    </div>
+
+    <div id="legacy-divider" class="auth-divider" style="display: none;"><span>or</span></div>
+
+    <form id="login-form" method="post" action="/api/auth/login">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+  </main>
+  <script>
+    const form = document.getElementById('login-form');
+    const messageEl = document.getElementById('message');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = form.username.value.trim();
+      const password = form.password.value;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+          redirect: 'manual'
+        });
+        if (res.status === 200) {
+          const data = await res.json();
+          if (data.redirect) window.location.href = data.redirect;
+          else window.location.href = '/config';
+        } else {
+          const data = await res.json().catch(() => ({}));
+          messageEl.textContent = data.detail || 'Invalid username or password.';
+          messageEl.className = 'message error';
+          messageEl.style.display = 'block';
+        }
+      } catch (err) {
+        messageEl.textContent = 'Something went wrong. Please try again.';
+        messageEl.className = 'message error';
+        messageEl.style.display = 'block';
+      }
+    });
+    (function initSignInOptions() {
+      var params = new URLSearchParams(window.location.search || '');
+      var msg = document.getElementById('message');
+      var err = params.get('signin');
+      if (err === 'error') { msg.textContent = 'Microsoft sign-in failed. Please try again.'; msg.className = 'message error'; msg.style.display = 'block'; }
+      else if (err === 'no_email') { msg.textContent = 'Your Microsoft account did not return an email. Ask your administrator to enable ID token claims for email.'; msg.className = 'message error'; msg.style.display = 'block'; }
+      else if (err === 'not_invited') { msg.textContent = 'Your account is not authorized for this application yet. Ask an administrator to add your email.'; msg.className = 'message error'; msg.style.display = 'block'; }
+      fetch('/api/auth/options').then(function(r) { return r.json(); }).then(function(opt) {
+        var ms = opt.microsoft && opt.microsoft.enabled;
+        var legacy = opt.legacy_password && opt.legacy_password.enabled;
+        var msBlock = document.getElementById('ms-signin-block');
+        var link = document.getElementById('ms-signin-link');
+        var div = document.getElementById('legacy-divider');
+        var form = document.getElementById('login-form');
+        if (ms && msBlock) {
+          msBlock.style.display = 'block';
+          if (link && opt.microsoft.login_url) link.setAttribute('href', opt.microsoft.login_url);
+        }
+        if (ms && legacy && div) div.style.display = 'flex';
+        if (!legacy && form) form.style.display = 'none';
+      }).catch(function() {});
+    })();
+  </script>
+  <script>
+    (function(){var KEY='pcf-theme';var SUN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';var MOON='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';function get(){return localStorage.getItem(KEY)||'light';}function apply(theme){if(theme==='light')document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');localStorage.setItem(KEY,theme);var btn=document.getElementById('theme-toggle');if(btn){btn.innerHTML=theme==='dark'?SUN:MOON;btn.setAttribute('aria-label',theme==='dark'?'Switch to light theme':'Switch to dark theme');}}apply(get());var btn=document.getElementById('theme-toggle');if(btn&&!btn.dataset.themeWired){btn.dataset.themeWired='1';btn.addEventListener('click',function(){apply(get()==='dark'?'light':'dark');});}})();
+  </script>
+</body>
+</html>
