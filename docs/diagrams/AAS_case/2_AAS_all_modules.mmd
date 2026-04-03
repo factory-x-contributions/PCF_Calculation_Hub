@@ -1,0 +1,73 @@
+%%{init: {'theme': 'neo-dark', 'look': 'classic'}}%%
+sequenceDiagram
+    autonumber
+box rgb(22, 3, 22) Machine (DMG Mori)
+
+    participant Controller as Machine Controller <br>(Sinumerik 840d sl)
+    participant Sensor as Consumption Sensor<br>(Sentron PAC2200)
+end
+box rgb(7, 21, 32) Siemens Edge Device (227G)
+
+    participant IIH as Ring Buffer Databank <br>(IIH)
+
+    participant Aggregator as aggregation layer<br>(IIH Aggregation App)
+end
+    %% participant MX_Port as MX-Port (Orion)
+box rgb(4, 20, 10) Cloud
+    participant AAS as AAS <br>(AssetFox or BaSyx)
+    participant PCF_calc as PCF Calculation Tool
+    participant PCF_mng as PCF Management Tool<br>(SiGREEN)
+end
+
+    Note over Sensor, IIH: Concurrent consumption data flow <br>(to be used for both idle time and operations)
+    loop every second
+        %% rect rgb(12, 62, 11)
+        %% interval can depend on if it is active power or tarif
+        %% note right of Sensor: Involves MX-Adapterand  Converter
+        IIH->>Sensor: Request total active power<br>(watt) [Modbus/MQTT]
+        Sensor-->>IIH: Return total active power (watt)
+        %% end
+        IIH->>IIH: Store in ring buffer<br> (30days retention)
+    end
+    AAS->>Controller: Send Production Order
+    Controller->>AAS: Ack Production Order
+    Note over Controller, Aggregator: Monitor machine operation
+    %% TODO: do we tell the machine job id also?
+    %% TODO: for now we only send the job id, but we could also send the machine id
+    %% TODO: operation abort or interrupt
+    Controller->>Aggregator: Notify Machine state (Start, interrupt or running) and job id [MQTT: QoS:0]
+    %% Aggregator-->>Controller: Ack "Operation Start Received"
+    Controller->>Aggregator: Notify Machine state (End or Abort) [MQTT: QoS:0]
+    %% Aggregator->>Aggregator: Record start, end and interrupt timestamps [UTC]
+
+    %% Aggregator-->>Controller: Ack "Operation End Received"
+    %% Aggregator->>Aggregator: Record end timestamp [UTC]
+    Aggregator->>Aggregator: Divide operations start to end time stamps <br> into consecutive time intervals
+    Note over Aggregator, IIH: Aggregate operation's consumption data
+    loop For every 15 minutes interval's time stamps
+        Aggregator->>IIH: Request time-series for total-active-power [Rest-API]
+        IIH-->>Aggregator: Return time-series for total-active-power
+        Aggregator->>Aggregator: Calculate interval's <br> total consumption
+    end
+    Aggregator->>IIH: Store operation's aggregated data [Rest-API]
+    IIH-->>Aggregator: Ack "Operation aggregated data"
+    Aggregator->>AAS: Notify operation's status end
+
+%% init0, running1, ended2, interrupted3, aborted4
+%% in practice what I did is agg layer directly sends data to AAS but makes
+%%sense if it first records it to database, either for bookkeeping or reliability
+    Note over AAS, IIH: Updating digital twin w.r.t. manufacturing aggregated data
+
+    %% AAS->>MX_Port: Request operation's aggregated data [OPC-UA]
+    %% MX_Port->>IIH: Request operation's aggregated data [OPC-UA]
+    %% AAS->>MX_Port: Request operation's aggregated data [OPC-UA]
+    IIH->>AAS: POST operation's consumption data [REST-API]
+    AAS->>IIH: Ack "Operation consumption data received"
+    %% AAS->>AAS: Assign product UUID
+
+    Note over AAS, PCF_mng: Calculate and Publish PCF
+    PCF_calc->>AAS: GET consumption data [Rest-API]
+    AAS->>PCF_calc: Return operation's consumption data
+
+    PCF_calc->>PCF_mng: Post PCF data [Rest-API]
+    PCF_mng->>PCF_calc: Ack PCF data
