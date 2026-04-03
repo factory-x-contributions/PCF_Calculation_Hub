@@ -1,0 +1,44 @@
+---
+config:
+  theme: neo-dark
+  look: classic
+---
+
+%% PCF Calculation Hub — outbound/inbound communication with other systems
+%% Render in Mermaid-compatible viewers, GitHub, or docs tooling.
+
+flowchart TB
+    subgraph producers [Upstream data and operators]
+        MES["MES / Opcenter-X or equivalent"]
+        MW["Middleware or edge service"]
+        UAG["User browser"]
+    end
+
+    subgraph hub ["PCF Calculation Hub (this app)"]
+        REST["REST API FastAPI"]
+        CFG["Config and login UI static pages"]
+    end
+
+    subgraph digitalTwin [Digital twin and PCF platforms]
+        AAS["AAS registry AssetFox BaSyx"]
+        SG["SiGREEN PCF API"]
+    end
+
+    subgraph identityAndData [Identity grid and persistence]
+        ENT["Microsoft Entra ID"]
+        GGC["Green Grid Compass CO2 API"]
+        S3["AWS S3 optional JSON mirror"]
+    end
+
+    MES -->|"POST /consumptionData POST /productionResults HTTPS"| REST
+    MW -->|"POST /general_consumptions HTTPS"| REST
+
+    UAG -->|"HTTPS pages /config /login /docs"| CFG
+    CFG --> REST
+    UAG -->|"OAuth2 OIDC redirect"| ENT
+    ENT -->|"callback /api/auth/microsoft/callback"| REST
+
+    REST -->|"Registry shell BOP reads configured polling"| AAS
+    REST -->|"OAuth2 REST own emissions BOM material PCF"| SG
+    REST -->|"GET hourly CO2 intensity when configured"| GGC
+    REST -->|"Optional load save for DB config allowlist"| S3
