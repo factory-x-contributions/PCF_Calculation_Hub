@@ -1,0 +1,55 @@
+---
+config:
+  theme: neo-dark
+  look: classic
+---
+
+sequenceDiagram
+    autonumber
+    box rgb(4, 20, 10) Cloud — AAS and PCF management toolchain
+    %% box rgb(4, 20, 10) AAS-based manufacturing and PCF toolchain
+        %%participant Ops as Manufacturing execution
+        participant aas as AAS <br>(AssetFox or BaSyx)
+        participant Hub as PCF calculation Hub
+        participant SG as PCF management Tool<br>(SiGREEN)
+    end
+
+    %% Note over aas, Hub: Concurrent idle time consumption reporting<br>Alternatively sent from aggregation layer
+    %% loop At regular schedule
+    %%     Hub->>aas: GET Idle / general consumption snapshot [REST-API]<br>(facility, equipment, energy or resource use)
+    %%     aas-->>Hub: response with idle time consumption data
+    %% end
+
+    %% Note over aas, SG: Processing completed production phases (digital laufzettel) (At regular schedules or triggered events)
+    Note over Hub, aas: Discover completed production phases (digital laufzettel shells)<br> ready for carbon footprint reporting (At regular schedules or triggered events)
+        loop Until the queue returns no further unprocessed completed shell (each: latest, unprocessed, all operations terminal)
+            Hub->>aas: GET next shell from queue [REST-API]
+            aas-->>Hub: Shell reference, status, and operation data
+            Hub-->>Hub: Put completed shell in queue buffer for processing
+        end
+        Note over aas, SG: Process completed shells for carbon footprint reporting (at regular schedules or triggered events)
+        
+        loop Each completed shell reference from queue buffer
+            Hub->>aas: GET bill of process and consumption [REST-API]<br>(operations, energy, materials, time bounds, product identifiers)
+            aas-->>Hub: Production data for the work order
+
+            Note over Hub, SG: Calculate priliminary BOM carbon footprint
+                loop For each material identifier
+                    Hub->>SG: Request material footprint reference data
+                    SG-->>Hub: Footprint per unit (e.g. kg CO2e)
+                end
+            %% end
+
+            Hub->>Hub: Merge process and material contributions<br>Allocate idle share, derive product PCF
+
+            Hub->>aas: GET product UUID [REST-API]
+            aas-->>Hub: product UUID
+
+        Note over Hub, SG: Report total product carbon footprint (PCF) to SiGREEN   
+        Hub->>SG: POST factory emissions / PCF report [REST-API]
+        SG-->>Hub: Ack (PCF stored in SiGREEN)
+
+        Hub->>Hub: Persist PCF report snapshot within work orders' database and <br> remove shell reference from queue buffer
+            Hub->>aas: Update shell processing status to completed<br>(status, references, audit trail) [REST-API]
+        end
+    %% end
