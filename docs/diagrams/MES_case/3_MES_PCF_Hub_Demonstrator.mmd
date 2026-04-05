@@ -1,0 +1,50 @@
+---
+config:
+  theme: neo-dark
+  look: classic
+---
+
+sequenceDiagram
+    autonumber
+
+    box rgb(4, 20, 10) Cloud — MES and PCF management toolchain
+        participant MES as MES<br>(OpCenter-X)
+        participant PCF as PCF Calculation Hub
+        participant SG as PCF Management Tool<br>(SiGREEN)
+    end
+
+
+    %% Note over MES, PCF: Concurrent idle time consumption reporting<br>Alternatively sent from aggregation layer
+    %% loop At regular schedule (reporting cadence)
+    %%     MES->>PCF: POST /general_consumptions [REST-API]<br>(building → machine → energy types)
+    %%     PCF-->>MES: Ack "idle time consumption"
+    %% end
+
+    Note over MES, PCF: Reporting work order's consumptions <br>(each process involving different energy and/or materials)
+
+    loop For each process of the work order
+        MES->>PCF: POST /consumptionData [REST-API]<br>(work order, operations, energy, materials)
+        PCF->>PCF: calculate preliminary own emissions carbon footprint
+         Note over PCF, SG: Calculate priliminary BOM carbon footprint
+            loop For each consumed material identifier
+                PCF->>SG: GET material PCF per unit [REST-API]
+                SG-->>PCF: upstream / cradle PCF data (kg CO2e per unit)
+            end
+        
+        PCF->>PCF: Merge work order's consumption report within database 
+        PCF-->>MES: Ack "work order consumptions reported"
+    end
+
+    Note over MES, SG: Report finalized production — compute own-emissions PCF and publish
+    MES->>PCF: POST /productionResults [REST-API]<br>(work drder, productId, times, quantity, …)
+
+    PCF->>PCF: Load BOP + materials + idle share from database<br>build PCF report (BOP / BOM / factory idle)
+
+    PCF->>SG: Resolve product UUID using internal productId<br>(GET, or create product if missing) [REST-API]
+    SG-->>PCF: product UUID
+ Note over PCF, SG: Report total product carbon footprint (PCF) 
+    PCF->>SG: POST factory emissions / PCF report [REST-API]
+    SG-->>PCF: Ack (PCF stored in SiGREEN)
+
+    PCF->>PCF: Prisist PCF report snapshot within work orders' database
+    PCF-->>MES: Ack "production's result data <br>successfully reported and processedd"
