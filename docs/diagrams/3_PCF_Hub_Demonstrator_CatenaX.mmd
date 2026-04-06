@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    %% box rgb(4, 20, 10) Catena-X PCF view - factory calculation hub
+        participant Site as Production site transparency tool<br>(MES, Digital Twin, or Aggregation layer)
+        participant Hub as PCF Calculation Tool
+        participant SG as PCF Management Tool
+    %% end
+
+    Note over Site, Hub: Own site emissions and energy (primary data),<br> purchased materials (upstream tiers)factory idle splits
+    Site->>Hub: BOP and BOM activity data, quantities, time window, idle inputs
+   
+    Hub->>Hub: Bookkeeping work orders' data 
+
+
+    Note over Hub, SG: Calculate priliminary BOM carbon footprint
+    SG->>Hub: Upstream material PCFs per declared unit
+    %% SG-->>Hub: Tier-n PCF per declared unit
+
+    Hub->>Hub: Calculate and merge BOM and BOP consumption data and <br>compute product PCF
+   Note over Hub, SG: Report total product carbon footprint (PCF) 
+
+    Hub->>SG: Publish PCF with product and process identifiers
+    Hub->>Hub: Bookkeeping PCF report snapshot beside work orders' data 
+    Hub-->>Site: Audit trail and lineage <br> for OEM or network data requests
