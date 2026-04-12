@@ -1,0 +1,641 @@
+{
+  "assetAdministrationShells": [
+    {
+      "idShort": "AAS_WO_2026_03_04_Template",
+      "id": "https://i.siemens.com/WO20260304/Template116",
+      "assetInformation": {
+        "assetKind": "Instance",
+        "globalAssetId": "urn:asset:16c29892-fe4c-4337-83d4-ec6528ee8883"
+      },
+      "submodels": [
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:submodel:ca7ee2a9-c739-4300-a7cf-0c216310f988"
+            }
+          ]
+        },
+        {
+          "type": "ModelReference",
+          "keys": [
+            {
+              "type": "Submodel",
+              "value": "urn:submodel:bc115d38-5edf-4a91-8582-e1a2b8784716"
+            }
+          ]
+        }
+      ],
+      "modelType": "AssetAdministrationShell"
+    }
+  ],
+  "submodels": [
+    {
+      "idShort": "CommonParameter",
+      "id": "urn:submodel:ca7ee2a9-c739-4300-a7cf-0c216310f988",
+      "kind": "Template",
+      "submodelElements": [
+        {
+          "idShort": "ScheduledProduction",
+          "value": [
+            {
+              "idShort": "PlannedProductionStart",
+              "valueType": "xs:string",
+              "value": "2026-01-22T23:00:00+00:00",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "PlannedProductionEnd",
+              "valueType": "xs:string",
+              "value": "2026-01-25T23:00:00+00:00",
+              "modelType": "Property"
+            }
+          ],
+          "modelType": "SubmodelElementCollection"
+        },
+        {
+          "idShort": "TakenPlaceProduction",
+          "value": [
+            {
+              "idShort": "ProductionStart",
+              "valueType": "xs:string",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "ProductionEnd",
+              "valueType": "xs:string",
+              "modelType": "Property"
+            }
+          ],
+          "modelType": "SubmodelElementCollection"
+        },
+        {
+          "idShort": "Details",
+          "value": [
+            {
+              "idShort": "WorkOrder",
+              "valueType": "xs:string",
+              "value": "WO-2026-02-27-15-46-51",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "LocationName",
+              "valueType": "xs:string",
+              "value": "Germany",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "FactoryId",
+              "valueType": "xs:string",
+              "value": "0195f153-7b83-75d5-9d54-888c4567866d",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "OperationStatus",
+              "valueType": "xs:string",
+              "value": "planned",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "ProductID",
+              "valueType": "xs:string",
+              "value": "PID_001",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "ProductFamily",
+              "valueType": "xs:string",
+              "value": "API Test Products",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "PCFComponentID",
+              "valueType": "xs:string",
+              "value": "0195f153-7b83-75d5-9d54-888c4567866d",
+              "modelType": "Property"
+            },
+            {
+              "idShort": "WorkOrderCarbonFootprint",
+              "valueType": "xs:float",
+              "value": "3.086",
+              "modelType": "Property"
+            }
+          ],
+          "modelType": "SubmodelElementCollection"
+        }
+      ],
+      "modelType": "Submodel"
+    },
+    {
+      "idShort": "Bill_of_Process",
+      "id": "urn:submodel:bc115d38-5edf-4a91-8582-e1a2b8784716",
+      "kind": "Template",
+      "submodelElements": [
+        {
+          "idShort": "Process_PR_456_on_DMG",
+          "value": [
+            {
+              "idShort": "MachineDetails",
+              "value": [
+                {
+                  "idShort": "WorkOrder",
+                  "valueType": "xs:string",
+                  "value": "WO-2026-02-27-15-46-51",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProcessOperationStatus",
+                  "valueType": "xs:string",
+                  "value": "Ended",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "MachineName",
+                  "valueType": "xs:string",
+                  "value": "DMG",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "MachineProgram",
+                  "valueType": "xs:string",
+                  "value": "PR-456",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "OperationStatusDataPointId",
+                  "valueType": "xs:string",
+                  "value": "f39d4f61-2898-4e19-9ed1-eacdbfd54904",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProgramDataPointId",
+                  "valueType": "xs:string",
+                  "value": "f39d4f61-2898-4e19-9ed1-eacdbfd54904",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "OrderDetails",
+              "value": [
+                {
+                  "idShort": "UnitOfMeasurement",
+                  "valueType": "xs:string",
+                  "value": "Piece",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "TotalAmount",
+                  "valueType": "xs:string",
+                  "value": "100",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ScrappedQuantity",
+                  "valueType": "xs:string",
+                  "value": "0",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProducedQuantity",
+                  "valueType": "xs:string",
+                  "value": "0",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProcessCarbonFootprint",
+                  "valueType": "xs:float",
+                  "value": "0.01713",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "ScheduledProduction",
+              "value": [
+                {
+                  "idShort": "PlannedProductionStart",
+                  "valueType": "xs:string",
+                  "value": "2026-01-22T23:00:00+00:00",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "PlannedProductionEnd",
+                  "valueType": "xs:string",
+                  "value": "2026-01-23T23:00:00+00:00",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "TakenPlaceProduction",
+              "value": [
+                {
+                  "idShort": "ProductionStart",
+                  "valueType": "xs:string",
+                  "value": "2026-03-02T22:48:42Z",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProductionEnd",
+                  "valueType": "xs:string",
+                  "value": "2026-03-02T22:48:57Z",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "EnergyConsumption",
+              "orderRelevant": true,
+              "typeValueListElement": "SubmodelElementCollection",
+              "value": [
+                {
+                  "value": [
+                    {
+                      "idShort": "Name",
+                      "valueType": "xs:string",
+                      "value": "electricity",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TotalConsumption",
+                      "valueType": "xs:string",
+                      "value": "0.02284",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TimeSeriesConsumption",
+                      "valueType": "xs:string",
+                      "value": "[0.00571,0.00571,0.00571,0.00571]",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "Unit",
+                      "valueType": "xs:string",
+                      "value": "kWh",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "EnergyConsumptionDataPointId",
+                      "valueType": "xs:string",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "AvgEmissionFactor",
+                      "valueType": "xs:float",
+                      "value": "0.350",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "EnergyConsumptionCarbonFootprint",
+                      "valueType": "xs:float",
+                      "value": "0.007994",
+                      "modelType": "Property"
+                    }
+                  ],
+                  "modelType": "SubmodelElementCollection"
+                },
+                {
+                  "value": [
+                    {
+                      "idShort": "Name",
+                      "valueType": "xs:string",
+                      "value": "CompressedAir",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TotalConsumption",
+                      "valueType": "xs:string",
+                      "value": "0.02284",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TimeSeriesConsumption",
+                      "valueType": "xs:string",
+                      "value": "[0.00571,0.00571,0.00571,0.00571]",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "Unit",
+                      "valueType": "xs:string",
+                      "value": "M3",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "EnergyConsumptionDataPointId",
+                      "valueType": "xs:string",
+                      "value": "f39d4f61-2898-4e19-9ed1-eacdbfd54904",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "AvgEmissionFactor",
+                      "valueType": "xs:float",
+                      "value": "0.400",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "EnergyConsumptionCarbonFootprint",
+                      "valueType": "xs:float",
+                      "value": "0.009136",
+                      "modelType": "Property"
+                    }
+                  ],
+                  "modelType": "SubmodelElementCollection"
+                }
+              ],
+              "modelType": "SubmodelElementList"
+            },
+            {
+              "idShort": "MaterialConsumption",
+              "orderRelevant": true,
+              "typeValueListElement": "SubmodelElementCollection",
+              "value": [
+                {
+                  "value": [
+                    {
+                      "idShort": "Name",
+                      "valueType": "xs:string",
+                      "value": "null",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TotalConsumption",
+                      "valueType": "xs:string",
+                      "value": "0.0",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TimeSeriesConsumption",
+                      "valueType": "xs:string",
+                      "value": "[]",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "Unit",
+                      "valueType": "xs:string",
+                      "value": "null",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "MaterialConsumptionDataPointId",
+                      "valueType": "xs:string",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "AvgEmissionFactor",
+                      "valueType": "xs:float",
+                      "value": "0.0",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "MaterialConsumptionCarbonFootprint",
+                      "valueType": "xs:string",
+                      "value": "0",
+                      "modelType": "Property"
+                    }
+                  ],
+                  "modelType": "SubmodelElementCollection"
+                }
+              ],
+              "modelType": "SubmodelElementList"
+            }
+          ],
+          "modelType": "SubmodelElementCollection"
+        },
+        {
+          "idShort": "Process_PR_123_on_Trumpf",
+          "value": [
+            {
+              "idShort": "MachineDetails",
+              "value": [
+                {
+                  "idShort": "WorkOrder",
+                  "valueType": "xs:string",
+                  "value": "WO-2026-02-27-15-46-51",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "OperationStatus",
+                  "valueType": "xs:string",
+                  "value": "Ended",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "MachineName",
+                  "valueType": "xs:string",
+                  "value": "Trumpf",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "MachineProgram",
+                  "valueType": "xs:string",
+                  "value": "PR-123",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "OperationStatusDataPointId",
+                  "valueType": "xs:string",
+                  "value": "f39d4f61-2898-4e19-9ed1-eacdbfd54904",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProgramDataPointId",
+                  "valueType": "xs:string",
+                  "value": "f39d4f61-2898-4e19-9ed1-eacdbfd54904",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "OrderDetails",
+              "value": [
+                {
+                  "idShort": "UnitOfMeasurement",
+                  "valueType": "xs:string",
+                  "value": "Piece",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "TotalAmount",
+                  "valueType": "xs:string",
+                  "value": "90",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ScrappedQuantity",
+                  "valueType": "xs:string",
+                  "value": "0",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProducedQuantity",
+                  "valueType": "xs:string",
+                  "value": "0",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProcessCarbonFootprint",
+                  "valueType": "xs:float",
+                  "value": "0.01713",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "ScheduledProduction",
+              "value": [
+                {
+                  "idShort": "PlannedProductionStart",
+                  "valueType": "xs:string",
+                  "value": "2026-01-24T23:00:00+00:00",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "PlannedProductionEnd",
+                  "valueType": "xs:string",
+                  "value": "2026-01-25T23:00:00+00:00",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "TakenPlaceProduction",
+              "value": [
+                {
+                  "idShort": "ProductionStart",
+                  "valueType": "xs:string",
+                  "modelType": "Property"
+                },
+                {
+                  "idShort": "ProductionEnd",
+                  "valueType": "xs:string",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "SubmodelElementCollection"
+            },
+            {
+              "idShort": "EnergyConsumption",
+              "orderRelevant": true,
+              "typeValueListElement": "SubmodelElementCollection",
+              "value": [
+                {
+                  "value": [
+                    {
+                      "idShort": "Name",
+                      "valueType": "xs:string",
+                      "value": "electricity",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TotalConsumption",
+                      "valueType": "xs:string",
+                      "value": "0.02284",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TimeSeriesConsumption",
+                      "valueType": "xs:string",
+                      "value": "[0.00571,0.00571,0.00571,0.00571]",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "Unit",
+                      "valueType": "xs:string",
+                      "value": "kWh",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "EnergyConsumptionDataPointId",
+                      "valueType": "xs:string",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "EnergyConsumptionCarbonFootprint",
+                      "valueType": "xs:float",
+                      "value": "0.007994",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "AvgEmissionFactor",
+                      "valueType": "xs:float",
+                      "value": "0.350",
+                      "modelType": "Property"
+                    }
+                  ],
+                  "modelType": "SubmodelElementCollection"
+                }
+              ],
+              "modelType": "SubmodelElementList"
+            },
+            {
+              "idShort": "MaterialConsumption",
+              "orderRelevant": true,
+              "typeValueListElement": "SubmodelElementCollection",
+              "value": [
+                {
+                  "value": [
+                    {
+                      "idShort": "Name",
+                      "valueType": "xs:string",
+                      "value": "null",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TotalConsumption",
+                      "valueType": "xs:string",
+                      "value": "0.0",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "TimeSeriesConsumption",
+                      "valueType": "xs:string",
+                      "value": "[]",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "Unit",
+                      "valueType": "xs:string",
+                      "value": "null",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "MaterialConsumptionDataPointId",
+                      "valueType": "xs:string",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "MaterialConsumptionCarbonFootprint",
+                      "valueType": "xs:string",
+                      "value": "0",
+                      "modelType": "Property"
+                    },
+                    {
+                      "idShort": "AvgEmissionFactor",
+                      "valueType": "xs:float",
+                      "value": "0.0",
+                      "modelType": "Property"
+                    }
+                  ],
+                  "modelType": "SubmodelElementCollection"
+                }
+              ],
+              "modelType": "SubmodelElementList"
+            }
+          ],
+          "modelType": "SubmodelElementCollection"
+        }
+      ],
+      "modelType": "Submodel"
+    }
+  ],
+  "conceptDescriptions": []
+}
