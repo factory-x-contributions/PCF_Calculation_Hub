@@ -90,3 +90,6 @@ key.pem
 node_modules/
 cdk.out/
 .terraform/
+
+# Internal design reference (large binary doc; not part of source)
+FX_tp210_aggregation_app-v3.docx
