@@ -16,7 +16,7 @@ sequenceDiagram
 
     %% Note over MES, PCF: Concurrent idle time consumption reporting<br>Alternatively sent from aggregation layer
     %% loop At regular schedule (reporting cadence)
-    %%     MES->>PCF: POST /general_consumptions [REST-API]<br>(building → machine → energy types)
+    %%     MES->>PCF: POST /idle_consumptions [REST-API]<br>(building → machine → energy types)
     %%     PCF-->>MES: Ack "idle time consumption"
     %% end
     
@@ -24,7 +24,7 @@ sequenceDiagram
 %% Note over Agg, PCF: Concurrent Consumption consumption reporting
 %% loop At regular reporting cadence T
 %%     Agg->>PCF: Send Building consumption records 
-%%      %% POST /general_consumptions (idle totals,<br> durations, work_orders_duration)
+%%      %% POST /idle_consumptions (idle totals,<br> durations, work_orders_duration)
 %%     PCF->>PCF: Allocate and increment idle consumption <br>to the correct work-orders production that <br>took place during T
 %% end 
 %% end
@@ -34,7 +34,7 @@ sequenceDiagram
  Note over Agg, PCF: Concurrent idle-time consumption reporting
 loop At regular reporting cadence T
     Agg->>PCF: Send Idle-time consumption records 
-     %% POST /general_consumptions (idle totals,<br> durations, work_orders_duration)
+     %% POST /idle_consumptions (idle totals,<br> durations, work_orders_duration)
     PCF->>PCF: Allocate and increment idle consumption <br>to the correct work-orders production that <br>took place during T
 end 
 end

@@ -110,7 +110,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(consumption.router, prefix="", tags=["consumption"])
-    app.include_router(general_consumption.router, prefix="", tags=["general consumption"])
+    app.include_router(general_consumption.router, prefix="", tags=["idle consumption"])
     app.include_router(production.router, prefix="", tags=["production"])
     app.include_router(admin.router, prefix="", tags=["admin"])
     app.include_router(auth.router, prefix="", tags=["auth"])

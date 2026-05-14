@@ -71,10 +71,18 @@ Resources:
           # Durable storage for work_order_records database across deploys
           DATABASE_S3_BUCKET: !Ref PcfDatabaseBucket
           DATABASE_S3_KEY: !Sub "${Environment}/data_base.json"
+          # Factory idle/production totals: /tmp + S3 (same pattern as work-order DB)
+          FACTORY_DATABASE_PATH: "/tmp/app/data/data_base_factory.json"
+          FACTORY_DATABASE_S3_BUCKET: !Ref PcfDatabaseBucket
+          FACTORY_DATABASE_S3_KEY: !Sub "${Environment}/data_base_factory.json"
           # App config: /tmp for local cache, S3 for persistence across deploys
           APP_CONFIG_PATH: "/tmp/app/data/app_config.json"
           APP_CONFIG_S3_BUCKET: !Ref PcfDatabaseBucket
           APP_CONFIG_S3_KEY: !Sub "${Environment}/app_config.json"
+          # Microsoft Entra allowlist: /tmp + S3 (same bucket as other JSON stores)
+          ALLOWED_USERS_PATH: "/tmp/app/data/allowed_users.json"
+          ALLOWED_USERS_S3_BUCKET: !Ref PcfDatabaseBucket
+          ALLOWED_USERS_S3_KEY: !Sub "${Environment}/allowed_users.json"
           SESSION_SECRET_KEY: !Sub "pcf-creator-${Environment}-change-me"
       Events:
         Api:

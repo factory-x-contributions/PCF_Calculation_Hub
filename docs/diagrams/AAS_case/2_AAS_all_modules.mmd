@@ -1,12 +1,17 @@
-%%{init: {'theme': 'neo-dark', 'look': 'classic'}}%%
+---
+config:
+  theme: neo-dark
+  look: classic
+---
+
 sequenceDiagram
     autonumber
-box rgb(22, 3, 22) Machine (DMG Mori)
+box rgb(22, 3, 22) Machine [DMG Mori]
 
     participant Controller as Machine Controller <br>(Sinumerik 840d sl)
     participant Sensor as Consumption Sensor<br>(Sentron PAC2200)
 end
-box rgb(7, 21, 32) Siemens Edge Device (227G)
+box rgb(7, 21, 32) Siemens Edge Device [227G]
 
     participant IIH as Ring Buffer Databank <br>(IIH)
 

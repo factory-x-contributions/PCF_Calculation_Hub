@@ -31,7 +31,7 @@ flowchart TB
     end
 
     MES -->|"POST /consumptionData POST /productionResults HTTPS"| REST
-    MW -->|"POST /general_consumptions HTTPS"| REST
+    MW -->|"POST /idle_consumptions HTTPS"| REST
 
     UAG -->|"HTTPS pages /config /login /docs"| CFG
     CFG --> REST

@@ -45,7 +45,7 @@ def test_live_openapi_json(live_available: bool) -> None:
 
 
 @pytest.mark.integration
-def test_live_general_consumptions(live_available: bool) -> None:
+def test_live_idle_consumptions(live_available: bool) -> None:
     if not live_available:
         pytest.skip(f"Server not reachable at {LIVE_BASE_URL}")
     payload = {
@@ -61,7 +61,7 @@ def test_live_general_consumptions(live_available: bool) -> None:
         "work_orders_duration": {"PO_40005": 40, "PO_40010": 60},
     }
     r = _session().post(
-        f"{LIVE_BASE_URL}/general_consumptions",
+        f"{LIVE_BASE_URL}/idle_consumptions",
         json=payload,
         timeout=10,
     )

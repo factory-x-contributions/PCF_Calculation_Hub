@@ -1,4 +1,4 @@
-"""Router tests for ``POST /general_consumptions``."""
+"""Router tests for ``POST /idle_consumptions``."""
 from __future__ import annotations
 
 import json
@@ -18,7 +18,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     return TestClient(app)
 
 
-def test_post_general_consumptions_201_and_persists(client: TestClient) -> None:
+def test_post_idle_consumptions_201_and_persists(client: TestClient) -> None:
     body = {
         "total_time": 60.0,
         "total_idle_time": 30.0,
@@ -28,7 +28,7 @@ def test_post_general_consumptions_201_and_persists(client: TestClient) -> None:
         "building_id": "B1",
         "idle_consumption_total": 5.0,
     }
-    response = client.post("/general_consumptions", json=body)
+    response = client.post("/idle_consumptions", json=body)
     assert response.status_code == 201
     data = response.json()
     assert data["status"] == "accepted"

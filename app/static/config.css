@@ -545,6 +545,33 @@ body.sidebar-open { overflow: hidden }
   background: rgba(255, 255, 255, 0.15);
 }
 
+/* Users tab — top ribbon next to Sign out (admins only) */
+.config-appbar .config-appbar-inline-tab {
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+  border: none;
+  border-bottom: none;
+  margin-bottom: 0;
+  border-radius: 6px;
+  text-align: center;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.config-appbar .config-appbar-inline-tab:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.config-appbar .config-appbar-inline-tab.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+  border-bottom: none;
+}
+
 /* ── Main content ─────────────────────────────────────── */
 .config-main {
   flex: 1;

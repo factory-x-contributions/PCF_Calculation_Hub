@@ -20,12 +20,12 @@ def _factory_db_path() -> Path:
     return Path(settings.factory_database_path)
 
 
-@router.post("/general_consumptions", status_code=201)
-def post_general_consumptions(body: GeneralConsumptionPayload) -> Dict[str, Any]:
+@router.post("/idle_consumptions", status_code=201)
+def post_idle_consumptions(body: GeneralConsumptionPayload) -> Dict[str, Any]:
     """Accept general idle consumption data and persist under building → machine → energy_type."""
     payload_dict = body.model_dump(mode="json")
     logger.info(
-        "POST /general_consumptions — %s",
+        "POST /idle_consumptions — %s",
         json.dumps(payload_dict, ensure_ascii=False),
     )
 

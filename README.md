@@ -26,7 +26,7 @@ Upstream systems (including IIH-backed aggregators) are responsible for **state-
 
 ## Core capabilities
 
-- **REST ingestion** – `POST /consumptionData` and `POST /productionResults` for operation-level energy and materials; `POST /general_consumptions` for building/machine idle and production energy totals merged into a factory JSON store.
+- **REST ingestion** – `POST /consumptionData` and `POST /productionResults` for operation-level energy and materials; `POST /idle_consumptions` for building/machine idle and production energy totals merged into a factory JSON store.
 - **Carbon logic** – Configurable carbon intensity mechanisms, compressed-air handling, and material PCF lookup where SiGREEN credentials are configured.
 - **Bookkeeping** – Beta version using a Per–work-order JSON database (`data_base.json`) with compatibility for newer multi–energy-type operation structures.
 - **PCF reporting** – Builds and submits PCF-oriented reports to SiGREEN.
@@ -140,7 +140,7 @@ Aligned with common industrial and sustainability integration patterns:
 
 **Login / Lambda env:** Confirm **`BASIC_AUTH_USERNAME`** and **`BASIC_AUTH_PASSWORD`** (or Entra vars) in Lambda **Configuration → Environment variables** if password login misbehaves after deploy.
 
-**Persistence:** Set `DATABASE_S3_*` and `APP_CONFIG_S3_*` (and `ALLOWED_USERS_S3_*` if used) so JSON state survives cold starts and redeploys.
+**Persistence:** The SAM template uses `/tmp` for local JSON files and S3 for durability (`DATABASE_S3_*`, `FACTORY_DATABASE_S3_*`, `APP_CONFIG_S3_*`, `ALLOWED_USERS_S3_*`). If you deploy without SAM, set matching `*_PATH` under `/tmp` and the same S3 variables so state survives cold starts and redeploys.
 
 **Logs:** Stdout/stderr → CloudWatch; the config UI log panel is in-memory only.
 

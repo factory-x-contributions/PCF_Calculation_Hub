@@ -484,7 +484,7 @@ async function loadRecords() {
     root.innerHTML = '';
     var keys = Object.keys(data);
     if (keys.length === 0) {
-      root.innerHTML = '<p class="wor-empty">No factory idle consumption data yet. Send data to <code>POST /general_consumptions</code>.</p>';
+      root.innerHTML = '<p class="wor-empty">No factory idle consumption data yet. Send data to <code>POST /idle_consumptions</code>.</p>';
     } else {
       keys.forEach(function (k) { root.appendChild(buildTree(k, data[k], 0)); });
     }

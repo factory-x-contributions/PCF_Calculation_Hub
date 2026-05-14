@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.config.settings import settings
 from app.models.general_consumption import GeneralConsumptionPayload
 from app.storage import JsonStore
 
@@ -15,7 +16,11 @@ FactoryDb = dict[str, Any]
 
 
 def _factory_store(path: Path) -> JsonStore:
-    return JsonStore(path)
+    return JsonStore(
+        path,
+        s3_bucket=settings.factory_database_s3_bucket,
+        s3_key=settings.factory_database_s3_key,
+    )
 
 
 def _load_factory_db(path: Path) -> FactoryDb:

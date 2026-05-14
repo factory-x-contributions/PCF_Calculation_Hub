@@ -33,6 +33,8 @@ class Settings(BaseSettings):
 
     database_path: str = "app/data/data_base.json"
     factory_database_path: str = "app/data/data_base_factory.json"
+    factory_database_s3_bucket: str = ""
+    factory_database_s3_key: str = ""
     database_s3_bucket: str = ""
     database_s3_key: str = ""
     app_config_path: str = "app/data/app_config.json"
