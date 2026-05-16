@@ -4,29 +4,29 @@
             "Process_PN_TRumpf_on_Trumpf": {
                 "energy": {
                     "energy_type": "Electricity",
-                    "total_consumption": 0.03483,
+                    "total_consumption": 0.02135,
                     "uom": "kWh",
                     "carbon_intensity_gco2_per_kwh": 350.0,
-                    "carbon_footprint_kg": 0.0121905
+                    "carbon_footprint_kg": 0.0074725
                 }
             },
             "Process_PN_11_on_DMG": {
                 "energy": {
                     "energy_type": "Electricity",
-                    "total_consumption": 0.03047,
+                    "total_consumption": 0.05339,
                     "uom": "kWh",
                     "carbon_intensity_gco2_per_kwh": 350.0,
-                    "carbon_footprint_kg": 0.0106645
+                    "carbon_footprint_kg": 0.018686499999999998
                 }
             }
         },
         "materials": {},
         "pcf": {
             "revision": "1",
-            "factoryId": "01989e05-9adf-7bb2-83eb-4f5090fed02a",
-            "factory": "OPC",
-            "from": "2026-05-02T20:50:30.000Z",
-            "to": "2026-05-02T21:50:30.000Z",
+            "factoryId": "0195f153-7b83-75d5-9d54-888c4567866d",
+            "factory": "Germany",
+            "from": "2026-03-09T13:15:13.000Z",
+            "to": "2026-05-15T14:00:10.000Z",
             "batch": {
                 "batchNumber": "Not provided",
                 "quantity": 1,
@@ -34,13 +34,13 @@
                 "dataSource": "PCF Creator APP V-1.0",
                 "comment": "First batch of the year"
             },
-            "productCarbonFootprint": 0.372608,
+            "productCarbonFootprint": 0.026159,
             "emissions": [
                 {
                     "typeOfActivity": "BOP: Process_PN_TRumpf_on_Trumpf",
-                    "total": 0.01219,
+                    "total": 0.007472,
                     "primaryDataShare": 75.8,
-                    "shareOnTotal": 3.2716645363004115,
+                    "shareOnTotal": 28.56569440727857,
                     "emissionUnit": "kgCO2e/piece",
                     "comment": "Own Energy consumption",
                     "fossil": 100.8,
@@ -51,9 +51,9 @@
                 },
                 {
                     "typeOfActivity": "BOP: Process_PN_11_on_DMG",
-                    "total": 0.010665,
+                    "total": 0.018686,
                     "primaryDataShare": 75.8,
-                    "shareOnTotal": 2.862119391934354,
+                    "shareOnTotal": 71.43430559272144,
                     "emissionUnit": "kgCO2e/piece",
                     "comment": "Own Energy consumption",
                     "fossil": 100.8,
@@ -61,27 +61,48 @@
                     "dLuc": 0,
                     "landUse": 0,
                     "aircraft": 0
-                },
+                }
+            ],
+            "comment": "Emission data from DMG Mori",
+            "sourceSystem": "API"
+        },
+        "data_source": "aas"
+    },
+    "WO-2026-03-27-13-37-13": {
+        "operations": {
+            "Process_LASER_CUT_001_on_Trumpf_TruLaser_5030": {
+                "energy": {
+                    "energy_type": "Electricity",
+                    "total_consumption": 2.66581,
+                    "uom": "kWh",
+                    "carbon_intensity_gco2_per_kwh": 350.0,
+                    "carbon_footprint_kg": 0.9330335000000001
+                }
+            }
+        },
+        "materials": {},
+        "pcf": {
+            "revision": "1",
+            "factoryId": "0195f153-7b83-75d5-9d54-888c4567866d",
+            "factory": "Germany",
+            "from": "2026-05-12T16:50:42.000Z",
+            "to": "2026-05-12T17:50:42.000Z",
+            "batch": {
+                "batchNumber": "Not provided",
+                "quantity": 1,
+                "assessmentYear": 2026,
+                "dataSource": "PCF Creator APP V-1.0",
+                "comment": "First batch of the year"
+            },
+            "productCarbonFootprint": 0.933034,
+            "emissions": [
                 {
-                    "typeOfActivity": "Idle_Time: Trumpf (Hall_20D)",
-                    "total": 0.174138,
+                    "typeOfActivity": "BOP: Process_LASER_CUT_001_on_Trumpf_TruLaser_5030",
+                    "total": 0.933034,
                     "primaryDataShare": 75.8,
-                    "shareOnTotal": 46.73488948186797,
+                    "shareOnTotal": 100.0,
                     "emissionUnit": "kgCO2e/piece",
-                    "comment": "Idle energy share for work order WO-2026-03-13-14-13-58 (factory data)",
-                    "fossil": 100.8,
-                    "biogenic": 0,
-                    "dLuc": 0,
-                    "landUse": 0,
-                    "aircraft": 0
-                },
-                {
-                    "typeOfActivity": "Idle_Time: DMG (Hall_20E)",
-                    "total": 0.175615,
-                    "primaryDataShare": 75.8,
-                    "shareOnTotal": 47.13132658989726,
-                    "emissionUnit": "kgCO2e/piece",
-                    "comment": "Idle energy share for work order WO-2026-03-13-14-13-58 (factory data)",
+                    "comment": "Own Energy consumption",
                     "fossil": 100.8,
                     "biogenic": 0,
                     "dLuc": 0,

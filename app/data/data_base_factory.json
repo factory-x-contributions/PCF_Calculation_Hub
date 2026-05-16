@@ -1,91 +1,90 @@
 {
+    "G21_Hall": {
+        "building_idle": {
+            "electricity": {
+                "idle_consumption_total_kwh": 0.73785,
+                "prod_consumption_total_kwh": 0.0,
+                "total_time": 8.9729,
+                "total_idle_time": 8.9729,
+                "work_orders_duration": {},
+                "idle_consumption_rate": 4.933856389795942,
+                "prod_consumption_rate": 0.0,
+                "machine_name": "G21_Hall",
+                "entry_count": 1,
+                "aggregate_scope": "building",
+                "publication_datetime": "2026-05-16T14:32:10.263000Z"
+            }
+        }
+    },
     "Hall_15E": {
         "DMC-65-H-mB": {
             "electricity": {
-                "idle_consumption_total_kwh": 0.012920000000000001,
-                "prod_consumption_total_kwh": 0.00083,
-                "total_time": 3.5591,
-                "total_idle_time": 3.3531999999999997,
-                "work_orders_duration": {
-                    "PO_40003": 0.2167
-                },
-                "idle_consumption_rate": 0.21780787277682562,
-                "prod_consumption_rate": 0.013992301424517434,
-                "machine_name": "DMC-65-H-mB",
-                "entry_count": 2,
-                "publication_datetime": "2026-05-10T11:01:56.369000Z"
-            },
-            "compressedair": {
-                "idle_consumption_total_kwh": 49046.236000000004,
+                "idle_consumption_total_kwh": 0.0342,
                 "prod_consumption_total_kwh": 0.0,
-                "total_time": 3.5591,
-                "total_idle_time": 3.5591,
+                "total_time": 8.9729,
+                "total_idle_time": 8.9729,
                 "work_orders_duration": {},
-                "idle_consumption_rate": 826830.9853614678,
+                "idle_consumption_rate": 0.2286886068049349,
                 "prod_consumption_rate": 0.0,
                 "machine_name": "DMC-65-H-mB",
-                "entry_count": 2,
-                "publication_datetime": "2026-05-10T11:01:56.369000Z"
+                "entry_count": 1,
+                "publication_datetime": "2026-05-16T14:32:10.263000Z"
+            },
+            "compressedair": {
+                "idle_consumption_total_kwh": 125264.758,
+                "prod_consumption_total_kwh": 0.0,
+                "total_time": 8.9729,
+                "total_idle_time": 8.9729,
+                "work_orders_duration": {},
+                "idle_consumption_rate": 837620.5552274071,
+                "prod_consumption_rate": 0.0,
+                "machine_name": "DMC-65-H-mB",
+                "entry_count": 1,
+                "publication_datetime": "2026-05-16T14:32:10.263000Z"
+            }
+        }
+    },
+    "Hall_20E": {
+        "Trumpf-LASMA-2": {
+            "compressedair": {
+                "idle_consumption_total_kwh": 125264.758,
+                "prod_consumption_total_kwh": 0.0,
+                "total_time": 8.9729,
+                "total_idle_time": 8.9729,
+                "work_orders_duration": {},
+                "idle_consumption_rate": 837620.5552274071,
+                "prod_consumption_rate": 0.0,
+                "machine_name": "Trumpf-LASMA-2",
+                "entry_count": 1,
+                "publication_datetime": "2026-05-16T14:32:10.263000Z"
+            },
+            "electricity": {
+                "idle_consumption_total_kwh": 0.73785,
+                "prod_consumption_total_kwh": 0.0,
+                "total_time": 8.9729,
+                "total_idle_time": 8.9729,
+                "work_orders_duration": {},
+                "idle_consumption_rate": 4.933856389795942,
+                "prod_consumption_rate": 0.0,
+                "machine_name": "Trumpf-LASMA-2",
+                "entry_count": 1,
+                "publication_datetime": "2026-05-16T14:32:10.263000Z"
             }
         }
     },
     "Hall_G21": {
         "Trumpf-LASMA-1": {
             "electricity": {
-                "idle_consumption_total_kwh": 0.13683,
+                "idle_consumption_total_kwh": 0.33666,
                 "prod_consumption_total_kwh": 0.0,
-                "total_time": 3.5591,
-                "total_idle_time": 3.5591,
+                "total_time": 8.9729,
+                "total_idle_time": 8.9729,
                 "work_orders_duration": {},
-                "idle_consumption_rate": 2.3067067517068924,
+                "idle_consumption_rate": 2.25117854874121,
                 "prod_consumption_rate": 0.0,
                 "machine_name": "Trumpf-LASMA-1",
-                "entry_count": 2,
-                "publication_datetime": "2026-05-10T11:01:56.369000Z"
-            }
-        }
-    },
-    "Hall_20E": {
-        "Trumpf-LASMA-2": {
-            "electricity": {
-                "idle_consumption_total_kwh": 0.31623,
-                "prod_consumption_total_kwh": 0.0,
-                "total_time": 3.5591,
-                "total_idle_time": 3.5591,
-                "work_orders_duration": {},
-                "idle_consumption_rate": 5.3310668427411425,
-                "prod_consumption_rate": 0.0,
-                "machine_name": "Trumpf-LASMA-2",
-                "entry_count": 2,
-                "publication_datetime": "2026-05-10T11:01:56.369000Z"
-            },
-            "compressedair": {
-                "idle_consumption_total_kwh": 49046.236000000004,
-                "prod_consumption_total_kwh": 0.0,
-                "total_time": 3.5591,
-                "total_idle_time": 3.5591,
-                "work_orders_duration": {},
-                "idle_consumption_rate": 826830.9853614678,
-                "prod_consumption_rate": 0.0,
-                "machine_name": "Trumpf-LASMA-2",
-                "entry_count": 2,
-                "publication_datetime": "2026-05-10T11:01:56.369000Z"
-            }
-        }
-    },
-    "unknown": {
-        "DMC-65-H-mB": {
-            "electricity": {
-                "idle_consumption_total_kwh": 0.02217,
-                "prod_consumption_total_kwh": 0.0,
-                "total_time": 2421.9219000000003,
-                "total_idle_time": 2421.9219000000003,
-                "work_orders_duration": {},
-                "idle_consumption_rate": 0.0005492332349775605,
-                "prod_consumption_rate": 0.0,
-                "machine_name": "DMC-65-H-mB",
-                "entry_count": 2,
-                "publication_datetime": "2026-05-11T10:16:16.025000Z"
+                "entry_count": 1,
+                "publication_datetime": "2026-05-16T14:32:10.263000Z"
             }
         }
     }

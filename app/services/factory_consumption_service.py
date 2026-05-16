@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any
 
 from app.config.settings import settings
-from app.models.general_consumption import GeneralConsumptionPayload
+from app.models.general_consumption import (
+    BUILDING_IDLE_MACHINE_ID,
+    GeneralConsumptionPayload,
+)
 from app.storage import JsonStore
 
 logger = logging.getLogger("pcf_creator_app")
@@ -24,11 +27,24 @@ def _factory_store(path: Path) -> JsonStore:
 
 
 def _load_factory_db(path: Path) -> FactoryDb:
-    return _factory_store(path).load()
+    """Load factory idle/consumption JSON.
+
+    If the local path **exists**, always use its parsed contents (including ``{}`` after
+    deleting the last building). Only when the file is **missing** do we delegate to
+    :class:`~app.storage.json_store.JsonStore.load` (S3-first when configured) so
+    stateless workers can hydrate from object storage.
+
+    Using ``if local:`` would wrongly treat an empty ``{}`` as "no file" and re-pull stale
+    S3 data, undoing a full delete on refresh.
+    """
+    store = _factory_store(path)
+    if store.path.exists():
+        return dict(store._read_local())
+    return store.load()
 
 
 def _save_factory_db(path: Path, data: FactoryDb) -> None:
-    _factory_store(path).save(data)
+    _factory_store(path).save(data, require_local_write=True)
 
 
 def _coerce_publication_dt(value: Any) -> datetime | None:
@@ -71,12 +87,26 @@ def _merge_work_orders_duration(
     node["work_orders_duration"] = acc
 
 
+def _resolve_building_key(data: FactoryDb, building_id: str) -> str | None:
+    """Match top-level factory key to the path/URL segment (exact, then trimmed)."""
+    if not building_id or not isinstance(data, dict):
+        return None
+    raw = building_id.strip()
+    if raw in data:
+        return raw
+    for k in data:
+        if isinstance(k, str) and k.strip() == raw:
+            return k
+    return None
+
+
 def delete_factory_building(db_path: Path, building_id: str) -> bool:
     """Remove one building branch from the factory database. Returns True if a row was deleted."""
     data = _load_factory_db(db_path)
-    if building_id not in data:
+    key = _resolve_building_key(data, building_id)
+    if key is None:
         return False
-    del data[building_id]
+    del data[key]
     _save_factory_db(db_path, data)
     return True
 
@@ -106,6 +136,11 @@ def merge_general_consumption(db_path: Path, payload: GeneralConsumptionPayload)
         }
 
     node = data[building][machine][energy]
+    if payload.machine_id == BUILDING_IDLE_MACHINE_ID:
+        node["aggregate_scope"] = "building"
+    elif "aggregate_scope" in node:
+        del node["aggregate_scope"]
+
     node["idle_consumption_total_kwh"] = float(node.get("idle_consumption_total_kwh", 0.0)) + float(
         payload.idle_consumption_total
     )

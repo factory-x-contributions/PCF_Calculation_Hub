@@ -1386,7 +1386,7 @@ body.sidebar-open { overflow: hidden }
 
 .log-panel.log-panel-fullscreen .log-panel-body {
   flex: 1;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
   min-height: 0;
 }

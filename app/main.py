@@ -98,6 +98,21 @@ def create_app() -> FastAPI:
     install_static_routes(app)
     _install_pcf_error_handler(app)
 
+    @app.get(
+        "/",
+        tags=["health"],
+        summary="Service reachability",
+        response_model=None,
+    )
+    def root() -> JSONResponse:
+        """Return 200 so partner apps, load balancers, and TLS probes can verify the hub is up."""
+        return JSONResponse(
+            content={
+                "service": settings.app_name,
+                "status": "ok",
+            }
+        )
+
     # Routers imported lazily so app.main remains importable even when route modules import settings.
     from app.api.routers import (
         admin,

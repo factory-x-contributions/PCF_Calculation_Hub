@@ -36,6 +36,7 @@ def post_idle_consumptions(body: GeneralConsumptionPayload) -> Dict[str, Any]:
         "status": "accepted",
         "building_id": body.building_id,
         "machine_id": body.machine_id,
+        "machine_name": body.machine_name,
         "energy_type": body.energy_type,
         "database_path": str(db_path),
     }

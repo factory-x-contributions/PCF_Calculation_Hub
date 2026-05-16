@@ -14,6 +14,14 @@ def client() -> TestClient:
     return TestClient(app)
 
 
+def test_root_returns_reachability_json(client: TestClient) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["service"]
+
+
 def test_static_serves_existing_file(client: TestClient) -> None:
     response = client.get("/static/swagger-logo.css")
     assert response.status_code == 200

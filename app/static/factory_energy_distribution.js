@@ -74,6 +74,7 @@ var MATERIAL_FIELD_ORDER = ['total_quantity', 'uom', 'carbon_footprint_productio
 var FACTORY_IDLE_HIDDEN = {
   machine_name: 1,
   entry_count: 1,
+  aggregate_scope: 1,
   total_duration_minutes: 1,
   total_idle_time_minutes: 1
 };
@@ -152,6 +153,38 @@ function prepareMaterialEntries(obj) {
     if (MATERIAL_FIELD_ORDER.indexOf(k) === -1 && k !== 'carbon_footprint_per_unit') entries.push([k, obj[k]]);
   });
   return entries;
+}
+
+/** Machine accordion + labels: prefer stored machine_name (hall display for building_idle). */
+function fedMachineRowLabel(machineKey, machineVal) {
+  if (!machineVal || typeof machineVal !== 'object') return friendlyKey(machineKey);
+  var picked = null;
+  Object.keys(machineVal).forEach(function (eId) {
+    var b = machineVal[eId];
+    if (b && typeof b === 'object' && b.machine_name) {
+      var mn = String(b.machine_name).trim();
+      if (mn) picked = mn;
+    }
+  });
+  if (picked) return picked;
+  return friendlyKey(machineKey);
+}
+
+/** Reserved machine bucket for per-hall idle totals (not a physical machine). */
+var FED_BUILDING_IDLE_KEY = 'building_idle';
+
+function fedRowIsHallIdleAggregate(machineKey, machineVal) {
+  if (machineKey === FED_BUILDING_IDLE_KEY) return true;
+  if (!machineVal || typeof machineVal !== 'object') return false;
+  var keys = Object.keys(machineVal);
+  if (keys.length === 0) return false;
+  for (var i = 0; i < keys.length; i++) {
+    var b = machineVal[keys[i]];
+    if (!b || typeof b !== 'object' || b.aggregate_scope !== 'building') {
+      return false;
+    }
+  }
+  return true;
 }
 
 function prepareFactoryIdleEntries(obj) {
@@ -293,7 +326,15 @@ function buildTree(key, val, depth) {
   var badgeText = '';
   if (fed) {
     if (depth === 0) { badgeCls = 'wor-badge-fed-building'; badgeText = 'Building'; }
-    else if (depth === 1) { badgeCls = 'wor-badge-fed-machine'; badgeText = 'Machine'; }
+    else if (depth === 1) {
+      if (fedRowIsHallIdleAggregate(key, val)) {
+        badgeCls = 'wor-badge-fed-building';
+        badgeText = 'Building';
+      } else {
+        badgeCls = 'wor-badge-fed-machine';
+        badgeText = 'Machine';
+      }
+    }
     else if (depth === 2) { badgeCls = 'wor-badge-fed-energy'; badgeText = 'Energy'; }
   } else {
     var isWorkOrder = depth === 0 || key.startsWith('PO_') || key.startsWith('WO_') || key.startsWith('WO-');
@@ -303,8 +344,12 @@ function buildTree(key, val, depth) {
   var cnt = Array.isArray(val) ? val.length : Object.keys(val).length;
   var workOrderKey = fed ? null : ((depth === 0) ? key : null);
   var fedBuildingKey = fed && depth === 0 ? key : null;
+  var headerLabel = friendlyKey(key);
+  if (fed && depth === 1) {
+    headerLabel = fedMachineRowLabel(key, val);
+  }
   var header = makeHeader(
-    friendlyKey(key),
+    headerLabel,
     badgeCls,
     badgeText,
     cnt + ' item' + (cnt !== 1 ? 's' : ''),
@@ -448,10 +493,17 @@ async function deleteWorkOrder(workOrderName, cardEl) {
 async function deleteFactoryBuilding(buildingId, cardEl) {
   try {
     var url = 'api/factory_energy_distribution/' + encodeURIComponent(buildingId);
-    var res = await fetch(url, { method: 'DELETE' });
+    var res = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
     if (res.status === 401) { window.location.href = 'login'; return; }
     if (res.status === 404) throw new Error('Building not found');
-    if (!res.ok) throw new Error('Delete failed');
+    if (!res.ok) {
+      var detail = 'HTTP ' + res.status;
+      try {
+        var errBody = await res.json();
+        if (errBody && errBody.detail) detail = String(errBody.detail);
+      } catch (e) { /* ignore */ }
+      throw new Error(detail);
+    }
     if (cardEl && cardEl.parentNode) cardEl.remove();
     if (_fedCachedData && _fedCachedData[buildingId]) {
       delete _fedCachedData[buildingId];
@@ -476,7 +528,7 @@ document.addEventListener('click', function (e) {
 async function loadRecords() {
   var root = document.getElementById('fed-tree');
   try {
-    var res = await fetch('api/factory_energy_distribution');
+    var res = await fetch('api/factory_energy_distribution', { credentials: 'same-origin' });
     if (res.status === 401) { window.location.href = 'login'; return; }
     if (!res.ok) throw new Error('HTTP ' + res.status);
     var data = await res.json();

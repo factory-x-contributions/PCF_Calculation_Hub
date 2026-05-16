@@ -50,8 +50,12 @@ class JsonStore:
             return self._with_defaults(from_local)
         return self._with_defaults(self._read_local())
 
-    def save(self, data: JsonDict) -> None:
-        self._write_local(data)
+    def save(self, data: JsonDict, *, require_local_write: bool = False) -> None:
+        """Persist ``data``. When ``require_local_write`` is True, local IO errors propagate."""
+        if require_local_write:
+            self._write_local_impl(data)
+        else:
+            self._write_local(data)
         if self._uses_s3():
             self._write_s3(data)
 
@@ -77,11 +81,14 @@ class JsonStore:
 
     def _write_local(self, data: JsonDict) -> None:
         try:
-            self.path.parent.mkdir(parents=True, exist_ok=True)
-            with self.path.open("w", encoding="utf-8") as f:
-                json.dump(data, f, indent=4, ensure_ascii=False)
+            self._write_local_impl(data)
         except OSError as exc:
             logger.warning("Failed to write %s: %s", self.path, exc)
+
+    def _write_local_impl(self, data: JsonDict) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        with self.path.open("w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
 
     def _read_s3(self) -> JsonDict | None:
         client = _s3_client()

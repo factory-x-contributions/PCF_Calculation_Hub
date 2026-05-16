@@ -41,6 +41,19 @@ def test_save_creates_parent_directory(tmp_path) -> None:
     assert nested.exists()
 
 
+def test_save_require_local_write_propagates_io_error(tmp_json_path) -> None:
+    store = JsonStore(tmp_json_path)
+    with patch("app.storage.json_store.json.dump", side_effect=OSError("disk full")):
+        with pytest.raises(OSError):
+            store.save({"a": 1}, require_local_write=True)
+
+
+def test_save_default_swallows_local_io_error(tmp_json_path) -> None:
+    store = JsonStore(tmp_json_path)
+    with patch("app.storage.json_store.json.dump", side_effect=OSError("denied")):
+        store.save({"a": 1})
+
+
 def test_s3_read_overrides_local(tmp_json_path) -> None:
     """When configured for S3, the store mirrors S3 onto the local file before returning."""
     tmp_json_path.write_text(json.dumps({"local": True}), encoding="utf-8")

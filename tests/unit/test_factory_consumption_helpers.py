@@ -184,6 +184,78 @@ def test_merge_general_consumption_keeps_latest_publication_datetime(tmp_path: P
     assert node["publication_datetime"].startswith("2026-01-01T12")
 
 
+def test_merge_general_consumption_building_aggregate_sets_scope(tmp_path: Path) -> None:
+    db_path = tmp_path / "factory.json"
+    p = GeneralConsumptionPayload.model_validate(
+        {
+            "total_time": 60.0,
+            "total_idle_time": 60.0,
+            "building_name": "Hall A",
+            "energy_type": "electricity",
+            "building_id": "B99",
+            "idle_consumption_total": 3.0,
+        }
+    )
+    out = fcs.merge_general_consumption(db_path, p)
+    node = out["B99"]["building_idle"]["electricity"]
+    assert node["aggregate_scope"] == "building"
+    assert node["machine_name"] == "Hall A"
+
+
+def test_merge_general_consumption_machine_row_omits_aggregate_scope(tmp_path: Path) -> None:
+    db_path = tmp_path / "factory.json"
+    out = fcs.merge_general_consumption(db_path, _payload())
+    node = out["B1"]["M1"]["electricity"]
+    assert "aggregate_scope" not in node
+
+
+def test_load_factory_db_prefers_nonempty_local(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Regression: do not let S3-first reads shadow a non-empty local factory file."""
+    import json
+
+    from app.config.settings import settings
+
+    db_path = tmp_path / "factory.json"
+    db_path.write_text(json.dumps({"OnDisk": {"M1": {"electricity": {}}}}), encoding="utf-8")
+    monkeypatch.setattr(settings, "factory_database_path", str(db_path))
+    monkeypatch.setattr(settings, "factory_database_s3_bucket", "bucket")
+    monkeypatch.setattr(settings, "factory_database_s3_key", "key")
+
+    out = fcs._load_factory_db(db_path)
+    assert "OnDisk" in out
+
+
+def test_load_factory_db_empty_file_does_not_resync_stale_s3(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """After deleting the last building, {} on disk must not trigger S3 restoring ghosts."""
+    from unittest.mock import patch
+
+    from app.config.settings import settings
+    from app.storage.json_store import JsonStore
+
+    db_path = tmp_path / "factory.json"
+    db_path.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(settings, "factory_database_path", str(db_path))
+    monkeypatch.setattr(settings, "factory_database_s3_bucket", "bucket")
+    monkeypatch.setattr(settings, "factory_database_s3_key", "key")
+
+    with patch.object(JsonStore, "_read_s3", return_value={"Ghost": {"M": {}}}):
+        out = fcs._load_factory_db(db_path)
+    assert out == {}
+    assert "Ghost" not in out
+
+
+def test_delete_factory_building_resolves_trimmed_json_key(tmp_path: Path) -> None:
+    import json
+
+    db_path = tmp_path / "factory.json"
+    db_path.write_text(json.dumps({"  G21_Hall  ": {"M": {"electricity": {}}}}), encoding="utf-8")
+    assert fcs.delete_factory_building(db_path, "G21_Hall") is True
+    remaining = json.loads(db_path.read_text(encoding="utf-8"))
+    assert remaining == {}
+
+
 def test_merge_general_consumption_drops_legacy_minute_fields(tmp_path: Path) -> None:
     """When a legacy node is loaded, the merger must rename ``*_minutes`` to the new keys."""
     import json

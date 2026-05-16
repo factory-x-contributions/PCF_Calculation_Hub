@@ -47,17 +47,23 @@
         var mData = raw[bId][mId];
         var mNid = 'm:' + bId + '/' + mId;
         var mTotal = 0;
+        var mLabel = mId;
         Object.keys(mData).forEach(function (eId) {
           var block = mData[eId];
+          if (block && typeof block === 'object' && block.machine_name) {
+            var mn = String(block.machine_name).trim();
+            if (mn) mLabel = mn;
+          }
           mTotal += (block.idle_consumption_total_kwh || 0) + (block.prod_consumption_total_kwh || 0);
         });
         if (mTotal <= 0) return;
 
-        ensure(mNid, mId, 1, bc);
+        ensure(mNid, mLabel, 1, bc);
         links.push({ src: 'b:' + bId, tgt: mNid, value: mTotal, color: bc });
 
         Object.keys(mData).forEach(function (eId) {
           var block = mData[eId];
+          if (!block || typeof block !== 'object') return;
           var idleK = block.idle_consumption_total_kwh || 0;
           var prodK = block.prod_consumption_total_kwh || 0;
           var eLabel = eId.charAt(0).toUpperCase() + eId.slice(1);

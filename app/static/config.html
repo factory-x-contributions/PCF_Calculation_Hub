@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/config.css?v=4">
+  <link rel="stylesheet" href="/static/config.css?v=8">
 </head>
 <body class="config-page">
   <div class="app-layout">
@@ -901,6 +901,29 @@
       }
     }
 
+    function setLogFullscreen(on) {
+      var panel = document.querySelector('.log-panel');
+      var fsBtn = document.getElementById('log-fullscreen-btn');
+      var body = document.getElementById('log-panel-body');
+      var chevron = document.getElementById('log-panel-chevron');
+      if (!panel || !fsBtn) return;
+      if (on) {
+        if (body) body.style.display = '';
+        if (chevron) chevron.classList.add('log-chevron-open');
+        panel.classList.add('log-panel-fullscreen');
+        fsBtn.textContent = 'Exit full screen';
+        if (panel.requestFullscreen) {
+          panel.requestFullscreen().catch(function() {});
+        }
+      } else {
+        panel.classList.remove('log-panel-fullscreen');
+        fsBtn.textContent = 'Full screen';
+        if (document.fullscreenElement === panel && document.exitFullscreen) {
+          document.exitFullscreen().catch(function() {});
+        }
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       fetchLogs();
       logPollTimer = setInterval(fetchLogs, logPollInterval);
@@ -911,10 +934,21 @@
           e.stopPropagation();
           var panel = document.querySelector('.log-panel');
           if (!panel) return;
-          var isFs = panel.classList.toggle('log-panel-fullscreen');
-          fsBtn.textContent = isFs ? 'Exit full screen' : 'Full screen';
+          var on = !panel.classList.contains('log-panel-fullscreen');
+          setLogFullscreen(on);
         });
       }
+      document.addEventListener('fullscreenchange', function() {
+        var panel = document.querySelector('.log-panel');
+        var fsBtn = document.getElementById('log-fullscreen-btn');
+        if (!panel || !fsBtn) return;
+        if (document.fullscreenElement !== panel && panel.classList.contains('log-panel-fullscreen')) {
+          if (document.fullscreenElement === null) {
+            panel.classList.remove('log-panel-fullscreen');
+            fsBtn.textContent = 'Full screen';
+          }
+        }
+      });
     });
   </script>
 
@@ -937,7 +971,7 @@
             <button class="log-filter-btn" data-level="ERROR" onclick="setLogFilter('ERROR')">Error</button>
           </div>
           <div class="log-actions">
-            <button id="log-fullscreen-btn" class="log-action-btn log-action-fullscreen" type="button" title="Toggle full screen">Full screen</button>
+            <button id="log-fullscreen-btn" class="log-action-btn log-action-fullscreen" type="button" title="Fill the window or use the browser's full screen (Esc to exit)">Full screen</button>
             <button id="log-auto-btn" class="log-action-btn active" onclick="toggleLogPoll()">Auto-refresh: ON</button>
             <button class="log-action-btn" onclick="fetchLogs()">Refresh</button>
             <button class="log-action-btn log-action-clear" onclick="clearLogs()">Clear</button>
