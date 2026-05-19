@@ -1,19 +1,27 @@
 """``/productionResults`` use case (MES push flow).
 
-Wraps :func:`app.application.mes_workflow.process_production_submission` for the
-same reason its sibling :class:`ConsumptionUseCase` does — to give the router a
-typed, dependency-injectable entry point. ``MissingConsumptionForWorkOrderError``
-escapes through the use case unchanged so the router's existing 400 mapping
-keeps working until the global :class:`PCFError` handler is wired up.
+Encapsulates the orchestration that finalizes one ``ProductionResults`` payload:
+fetch the persisted BOP for the work order, optionally fold in the material
+breakdown, build the PCF report, submit it to SiGREEN, and persist the response.
 """
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from app.application.mes_workflow import process_production_submission
 from app.models.production import ProductionResults
+
+logger = logging.getLogger("pcf_creator_app")
+
+
+class MissingConsumptionForWorkOrderError(ValueError):
+    """Raised when production is finalized without prior consumption rows for that work order.
+
+    The HTTP layer (``app.api.routers.production``) translates this into a 400 with
+    the spec-mandated detail message.
+    """
 
 
 class ProductionUseCase:
@@ -37,16 +45,51 @@ class ProductionUseCase:
         self._update_pcf_for_work_order = update_pcf_for_work_order
 
     def execute(self, *, db_path: Path, data: ProductionResults) -> dict[str, Any]:
-        return process_production_submission(
-            db_path=db_path,
+        bop = self._get_bop_for_work_order(db_path=db_path, work_order_name=data.workOrderName)
+        if not bop:
+            logger.warning("No consumption data found for workOrder=%s", data.workOrderName)
+            raise MissingConsumptionForWorkOrderError(data.workOrderName)
+
+        cfg = self._load_app_config()
+        materials_breakdown = None
+        if cfg.get("pcf_include_bom", True):
+            materials_breakdown = self._get_materials_cf_breakdown(db_path, data.workOrderName)
+            if not materials_breakdown:
+                materials_breakdown = None
+
+        pcf_report = self._create_own_emission_cf_report(
+            bill_of_process=bop,
             data=data,
-            load_app_config_fn=self._load_app_config,
-            get_bop_for_work_order=self._get_bop_for_work_order,
-            get_materials_cf_breakdown=self._get_materials_cf_breakdown,
-            create_own_emission_cf_report=self._create_own_emission_cf_report,
-            submit_factory_emissions=self._submit_factory_emissions,
-            update_pcf_for_work_order=self._update_pcf_for_work_order,
+            materials_breakdown=materials_breakdown,
+        )
+        logger.info("PCF report created for workOrder=%s", data.workOrderName)
+
+        product_uuid = self._submit_factory_emissions(
+            product_id=data.productId, pcf_report=pcf_report
+        )
+        logger.info(
+            "Factory emissions submitted — workOrder=%s productUuid=%s",
+            data.workOrderName,
+            product_uuid,
         )
 
+        self._update_pcf_for_work_order(
+            db_path=db_path,
+            work_order_name=data.workOrderName,
+            pcf_report=pcf_report,
+            product_name=data.productName,
+        )
 
-__all__ = ["ProductionUseCase"]
+        return {
+            "workOrderName": data.workOrderName,
+            "productId": data.productId,
+            "productUuid": product_uuid,
+            "producedQuantity": data.producedQuantity,
+            "timestamp": data.timestamp,
+        }
+
+
+__all__ = [
+    "MissingConsumptionForWorkOrderError",
+    "ProductionUseCase",
+]

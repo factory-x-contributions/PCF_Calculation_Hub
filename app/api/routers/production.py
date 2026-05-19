@@ -6,7 +6,7 @@ from typing import Any, Dict
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import DatabasePathDep, ProductionUseCaseDep
-from app.application.mes_workflow import MissingConsumptionForWorkOrderError
+from app.application.use_cases.production_use_case import MissingConsumptionForWorkOrderError
 from app.models.production import ProductionResults
 
 logger = logging.getLogger("pcf_creator_app")

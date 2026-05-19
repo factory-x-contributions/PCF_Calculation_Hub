@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
 from app.api.deps import get_database_path, get_production_use_case
-from app.application.mes_workflow import MissingConsumptionForWorkOrderError
+from app.application.use_cases.production_use_case import MissingConsumptionForWorkOrderError
 from app.main import app
 from tests.fixtures import http_payloads
 

@@ -10,7 +10,8 @@ from fastapi import FastAPI
 
 from app.application.aas_polling import aas_polling_loop_forever
 from app.config.settings import settings
-from app.core.container import build_aas_pcf_processor, build_app_config_loader
+from app.services.aas_service import process_aas_shells_for_pcf
+from app.services.config_service import load_app_config
 
 logger = logging.getLogger("pcf_creator_app")
 
@@ -18,15 +19,15 @@ logger = logging.getLogger("pcf_creator_app")
 def _start_aas_polling_thread() -> threading.Thread:
     """Spawn the AAS polling daemon thread.
 
-    Wired through :mod:`app.application.aas_polling` (the injectable port) and
-    :mod:`app.core.container` (the composition root). Imports are resolved once at
-    module load — no ``from app.services… import`` hidden inside ``while True:``.
+    Imports are resolved once at module load (no ``from app.services… import``
+    hidden inside the ``while True:`` loop), and the collaborators are wired
+    directly so the call graph stays one hop deep.
     """
     thread = threading.Thread(
         target=aas_polling_loop_forever,
         kwargs={
-            "load_app_config": build_app_config_loader(),
-            "process_aas_shells_for_pcf": build_aas_pcf_processor(),
+            "load_app_config": load_app_config,
+            "process_aas_shells_for_pcf": process_aas_shells_for_pcf,
             "sleep_fn": time.sleep,
             "logger": logger,
         },

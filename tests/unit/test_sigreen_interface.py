@@ -16,7 +16,6 @@ from app.integrations.sigreen import (
     SiGREENInterface,
     _auth_headers,
     base64_encode,
-    save_dict_to_json,
 )
 
 
@@ -56,12 +55,6 @@ def _stub_credentials(monkeypatch):
 
 def test_base64_encode_simple_string() -> None:
     assert base64_encode("hello") == "aGVsbG8="
-
-
-def test_save_dict_to_json_roundtrip(tmp_path) -> None:
-    p = tmp_path / "out.json"
-    save_dict_to_json({"a": 1, "b": [1, 2]}, p)
-    assert p.read_text(encoding="utf-8").strip().startswith("{")
 
 
 def test_load_sigreen_product_identifier_type_default(monkeypatch) -> None:
@@ -273,31 +266,7 @@ def test_get_component_pcf_data_returns_payload(sigi: SiGREENInterface) -> None:
         assert sigi.get_component_pcf_data() == {"items": []}
 
 
-# -- _pcf_from_production_and_distribution / _pcf_stages_from_item ----------------------
-
-
-def test_pcf_from_production_and_distribution_sums_stages(sigi: SiGREENInterface) -> None:
-    item = {
-        "productionStage": {"pcfIncludingBiogenic": 1.5},
-        "distributionStage": {"pcfIncludingBiogenic": 0.5},
-    }
-    assert sigi._pcf_from_production_and_distribution(item) == 2.0
-
-
-def test_pcf_from_production_and_distribution_uses_excluding_when_including_missing(sigi: SiGREENInterface) -> None:
-    item = {
-        "productionStage": {"pcfExcludingBiogenic": 1.0},
-        "distributionStage": {"pcfExcludingBiogenic": 0.4},
-    }
-    assert sigi._pcf_from_production_and_distribution(item) == pytest.approx(1.4)
-
-
-def test_pcf_from_production_and_distribution_returns_none_on_unparseable(sigi: SiGREENInterface) -> None:
-    item = {
-        "productionStage": {"pcfIncludingBiogenic": "not-a-number"},
-        "distributionStage": {},
-    }
-    assert sigi._pcf_from_production_and_distribution(item) is None
+# -- _pcf_stages_from_item -------------------------------------------------------------
 
 
 def test_pcf_stages_from_item_returns_tuple(sigi: SiGREENInterface) -> None:

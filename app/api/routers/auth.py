@@ -56,6 +56,18 @@ def _login_url_with_query(extra: str = "") -> str:
     return f"{path}?{extra}" if extra else path
 
 
+def _oauth_redirect_clearing_state(target_url: str) -> RedirectResponse:
+    """Redirect helper that always clears the one-shot OAuth state cookie.
+
+    Every fail/deny/abort branch of ``microsoft_login_callback`` ends with the
+    same three-line pattern; centralizing it here keeps the state machine
+    readable and ensures the cookie is never left dangling.
+    """
+    response = RedirectResponse(url=target_url, status_code=302)
+    response.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
+    return response
+
+
 @router.get("/api/auth/options")
 def auth_options() -> JSONResponse:
     """Public: login methods available for the sign-in page."""
@@ -166,77 +178,56 @@ def microsoft_login_callback(request: Request, code: str = "", state: str = "", 
 
     if error:
         logger.info("Microsoft OAuth error param: %s", error)
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     cookie_state = request.cookies.get(OAUTH_STATE_COOKIE_NAME) or ""
     if not state or not cookie_state or state != cookie_state:
         logger.warning("OAuth state mismatch (possible CSRF).")
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
     if verify_oauth_state(state) is None:
         logger.warning("Invalid or expired OAuth state signature.")
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     if not code:
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     redirect_uri = _microsoft_redirect_uri()
     try:
         tokens = exchange_code_for_tokens(code=code, redirect_uri=redirect_uri)
     except ValueError:
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     id_token = tokens.get("id_token")
     if not id_token or not isinstance(id_token, str):
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     try:
         claims = validate_id_token(id_token)
     except Exception:
         logger.exception("id_token validation failed")
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     if not isinstance(claims, dict):
-        fail = RedirectResponse(url=login_err, status_code=302)
-        fail.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return fail
+        return _oauth_redirect_clearing_state(login_err)
 
     email = principal_email_from_claims(claims)
     display_name = str(claims.get("name") or "").strip()
     if not email:
         logger.warning("Microsoft token had no email or UPN claim.")
-        denied = RedirectResponse(url=_login_url_with_query("signin=no_email"), status_code=302)
-        denied.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return denied
+        return _oauth_redirect_clearing_state(_login_url_with_query("signin=no_email"))
 
     if not is_user_allowed_to_sign_in(email):
         logger.info("Sign-in denied (not invited): %s", email)
-        denied = RedirectResponse(url=_login_url_with_query("signin=not_invited"), status_code=302)
-        denied.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
-        return denied
+        return _oauth_redirect_clearing_state(_login_url_with_query("signin=not_invited"))
 
     ensure_bootstrap_user_record(email, display_name=display_name)
 
-    ok = RedirectResponse(url=_config_redirect_url(), status_code=302)
+    ok = _oauth_redirect_clearing_state(_config_redirect_url())
     ok.set_cookie(
         SESSION_COOKIE_NAME,
         create_session_token(email, kind="entra"),
         **session_cookie_set_kwargs(),
     )
-    ok.delete_cookie(OAUTH_STATE_COOKIE_NAME, **oauth_state_cookie_delete_kwargs())
     return ok
 
 

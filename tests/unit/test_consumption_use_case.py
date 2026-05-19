@@ -2,16 +2,12 @@
 
 Drives the use case with fake collaborators so the orchestration class is
 exercised in isolation from the actual carbon math, JSON store, and SiGREEN
-network. The same test surface will be re-used in Phase 6 once the legacy
-:func:`app.application.mes_workflow.process_consumption_submission` is folded
-into ``execute()`` directly.
+network.
 """
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-
-import pytest
 
 from app.application.use_cases.consumption_use_case import ConsumptionUseCase
 from app.models.consumption import ConsumptionData

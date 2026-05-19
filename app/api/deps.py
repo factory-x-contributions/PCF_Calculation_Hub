@@ -10,7 +10,7 @@ from app.application.ports import MaterialPcfFetcherPort
 from app.application.use_cases.consumption_use_case import ConsumptionUseCase
 from app.application.use_cases.production_use_case import ProductionUseCase
 from app.config.settings import settings
-from app.core.container import build_app_config_loader, build_material_pcf_fetcher
+from app.services.config_service import load_app_config
 
 
 def get_database_path() -> Path:
@@ -38,7 +38,7 @@ MaterialPcfFetcherDep = Annotated[MaterialPcfFetcherPort, Depends(get_material_p
 
 def get_app_config() -> dict[str, Any]:
     """Snapshot of the runtime app configuration for one request."""
-    return build_app_config_loader()()
+    return load_app_config()
 
 
 AppConfigDep = Annotated[dict[str, Any], Depends(get_app_config)]

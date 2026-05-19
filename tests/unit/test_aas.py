@@ -313,29 +313,6 @@ def test_mock_aas_get_process_energy_kwh() -> None:
     assert t_end == "2026-03-02T22:48:57Z"
 
 
-def test_extract_product_id_from_common_parameter_new_template() -> None:
-    """CommonParameter Details contains ProductID and PCFComponentID (new template)."""
-    from app.services.aas_service import _extract_product_id_from_common_parameter
-
-    def mock_get(url: str, **kwargs):
-        r = MagicMock()
-        r.status_code = 200
-        r.content = b"{}"
-        if "submodels" in url:
-            # Return CommonParameter submodel when requested
-            common = _get_submodel_by_id("urn:submodel:ca7ee2a9-c739-4300-a7cf-0c216310f988")
-            if common:
-                r.json = lambda: common
-                r.content = json.dumps(common).encode()
-        return r
-
-    mock_aas = MockAASInterface()
-    with patch("requests.get", side_effect=mock_get):
-        product_id, pcf_component_id = _extract_product_id_from_common_parameter(mock_aas, mock_aas.shell_id)
-    assert product_id == "PID_001"
-    assert pcf_component_id == "0195f153-7b83-75d5-9d54-888c4567866d"
-
-
 def test_aas_process_shells_api_requires_aas_config() -> None:
     """POST /api/aas/process_shells returns error when data_source is not AAS."""
     from fastapi.testclient import TestClient

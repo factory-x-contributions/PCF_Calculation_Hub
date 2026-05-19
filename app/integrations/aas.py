@@ -114,6 +114,19 @@ class AASInterface(object):
             headers["Authorization"] = f"Bearer {self.fetch_assetfox_token()}"
         return headers
 
+    def _submodel_url(self, sm_id: str, shell_id: str | None = None, *, element_path: str = "") -> str:
+        """Return the canonical submodel (or submodel-element) URL for this AAS variant.
+
+        BaSyx exposes submodels under ``/submodels/{sm_id}``; AssetFox requires the
+        shell-scoped path ``/shells/{shell_enc}/submodels/{sm_id}`` and only falls
+        back to the registry path on a 404. ``sm_id`` must already be base64url-encoded.
+        """
+        suffix = f"/submodel-elements/{element_path}" if element_path else ""
+        if self.aas_type == 'AAS (BaSyx)' or shell_id is None:
+            return f"{self.registry_base_url}/submodels/{sm_id}{suffix}"
+        shell_enc = base64url_encode(shell_id)
+        return f"{self.registry_base_url}/shells/{shell_enc}/submodels/{sm_id}{suffix}"
+
     def fetch_assetfox_token(self) -> str | None:
         """Return an AssetFox access token, or ``None`` for the BaSyx (no-auth) variant.
 
@@ -236,9 +249,7 @@ class AASInterface(object):
         shell_enc = base64url_encode(shell_id)
         for sm_ref in refs:
             sm_id = base64url_encode(sm_ref)
-            url = f"{self.registry_base_url}/shells/{shell_enc}/submodels/{sm_id}"
-            if self.aas_type == "AAS (BaSyx)":
-                url = f"{self.registry_base_url}/submodels/{sm_id}"
+            url = self._submodel_url(sm_id, shell_id)
             try:
                 resp = requests.get(url, headers=self._headers(), timeout=10)
                 if resp.status_code == 200 and resp.content:
@@ -252,10 +263,7 @@ class AASInterface(object):
     def get_submodel_by_urn(self, shell_id: str, submodel_urn: str) -> dict:
         """Fetch full submodel JSON by shell_id and submodel URN (e.g. BOP)."""
         sm_b64 = base64url_encode(submodel_urn)
-        shell_enc = base64url_encode(shell_id)
-        url = f"{self.registry_base_url}/shells/{shell_enc}/submodels/{sm_b64}"
-        if self.aas_type == "AAS (BaSyx)":
-            url = f"{self.registry_base_url}/submodels/{sm_b64}"
+        url = self._submodel_url(sm_b64, shell_id)
         resp = requests.get(url, headers=self._headers(), timeout=10)
         resp.raise_for_status()
         if not resp.content:
@@ -270,10 +278,7 @@ class AASInterface(object):
             submodel_id_short, elem_path = parts[0], parts[1]
             sm_ref = self._get_submodel_ref_by_id_short(sid, submodel_id_short)
             sm_id = base64url_encode(sm_ref)
-            shell_enc = base64url_encode(sid)
-            url = f"{self.registry_base_url}/shells/{shell_enc}/submodels/{sm_id}/submodel-elements/{elem_path}"
-            if self.aas_type == "AAS (BaSyx)":
-                url = f"{self.registry_base_url}/submodels/{sm_id}/submodel-elements/{elem_path}"
+            url = self._submodel_url(sm_id, sid, element_path=elem_path)
             resp = requests.get(url, headers=self._headers(), timeout=10)
             resp.raise_for_status()
             if not resp.content:
@@ -371,10 +376,7 @@ class AASInterface(object):
                 sid = shell_id or self.asset_name
                 sm_ref = self._get_submodel_ref_by_id_short(sid, submodel_id_short)
                 sm_id = base64url_encode(sm_ref)
-                shell_enc = base64url_encode(sid)
-                put_url = f"{self.registry_base_url}/shells/{shell_enc}/submodels/{sm_id}/submodel-elements/{elem_path}"
-                if self.aas_type == "AAS (BaSyx)":
-                    put_url = f"{self.registry_base_url}/submodels/{sm_id}/submodel-elements/{elem_path}"
+                put_url = self._submodel_url(sm_id, sid, element_path=elem_path)
         entries = elem.get("value", [])
         if index >= len(entries):
             raise IndexError(f"List index {index} out of range (len={len(entries)})")
@@ -429,10 +431,7 @@ class AASInterface(object):
             sid = shell_id or self.asset_name
             sm_ref = self._get_submodel_ref_by_id_short(sid, submodel_id_short)
             sm_id = base64url_encode(sm_ref)
-            shell_enc = base64url_encode(sid)
-            put_url = f"{self.registry_base_url}/shells/{shell_enc}/submodels/{sm_id}/submodel-elements/{elem_path}"
-            if self.aas_type == "AAS (BaSyx)":
-                put_url = f"{self.registry_base_url}/submodels/{sm_id}/submodel-elements/{elem_path}"
+            put_url = self._submodel_url(sm_id, sid, element_path=elem_path)
             resp = requests.put(put_url, headers=self._headers(), json=asset, timeout=10)
             resp.raise_for_status()
         else:

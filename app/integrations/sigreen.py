@@ -1,11 +1,9 @@
 import re
 import requests
 import base64
-import json
 import os
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
 
 from app.integrations.oauth_token_cache import TokenCache
 
@@ -87,36 +85,14 @@ def _auth_headers() -> dict[str, str]:
 
 
 def base64_encode(data: str) -> str:
-    """
-    Encodes a string in base64 format.
-
-    Args:
-        data (str): The string to encode.
-
-    Returns:
-        str: The base64 encoded string.
-    """
+    """Encode a string as base64 (UTF-8 input, ASCII output)."""
     return base64.b64encode(data.encode("utf-8")).decode("utf-8")
-
-
-def save_dict_to_json(data: dict, filepath: Path) -> None:
-    """
-    Saves a dictionary to a JSON file.
-
-    Args:
-        data (dict): The dictionary to save.
-        filepath (Path): The path to the JSON file.
-    """
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
-
-
 
 
 DEFAULT_SIGREEN_BASE_URL = "https://app-uat.sigreen-playground.siemens.cloud/api"
 
 
-class SiGREENInterface (object):
+class SiGREENInterface:
     def __init__(self, factory_name, factory_id=None, base_url=None):
         self.factory_id = factory_id
         self.factory_name = factory_name
@@ -278,22 +254,6 @@ class SiGREENInterface (object):
         )
         self.handle_response(response)
         return response.json()
-
-    def _pcf_from_production_and_distribution(self, item: dict) -> float | None:
-        """
-        Extract total PCF (production + distribution stages) from a secondary data or pcfData item.
-        Sums pcfIncludingBiogenic (or pcfExcludingBiogenic) from productionStage and distributionStage.
-        Returns None only if neither stage has parseable PCF data.
-        """
-        prod = item.get("productionStage") or {}
-        dist = item.get("distributionStage") or {}
-        p_prod = prod.get("pcfIncludingBiogenic") or prod.get("pcfExcludingBiogenic") or 0
-        p_dist = dist.get("pcfIncludingBiogenic") or dist.get("pcfExcludingBiogenic") or 0
-        try:
-            total = float(p_prod) + float(p_dist)
-        except (TypeError, ValueError):
-            return None
-        return total
 
     def _pcf_stages_from_item(self, item: dict) -> tuple[float, float] | None:
         """

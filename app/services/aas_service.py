@@ -284,17 +284,6 @@ def _extract_common_parameter_details(
     return result
 
 
-def _extract_product_id_from_common_parameter(
-    aasi: AASInterface, shell_id: str
-) -> tuple[str | None, str | None]:
-    """
-    Extract ProductID and PCFComponentID from CommonParameter submodel (Template).
-    Returns (product_id, pcf_component_id).
-    """
-    details = _extract_common_parameter_details(aasi, shell_id)
-    return details["product_id"], details["pcf_component_id"]
-
-
 def _shell_id_to_product_identifier(shell_id: str) -> str:
     """Derive a SiGREEN product identifier from shell ID when WorkOrder/ProductID is missing."""
     s = (shell_id or "").strip()
@@ -462,17 +451,6 @@ def _get_process_materials(
                 process_id_short, e, fallback_e,
             )
     return materials
-
-
-def _fetch_aas_material_pcf_map(
-    sigi: SiGREENInterface,
-    materials: dict[str, dict[str, Any]],
-    cfg: dict[str, Any],  # noqa: ARG001 — kept for signature stability
-) -> dict[str, dict[str, float]]:
-    """Look up SiGREEN PCF per material. Delegates to the shared MES+AAS implementation."""
-    from app.services.material_pcf import fetch_material_pcf_map
-
-    return fetch_material_pcf_map(list(materials.keys()), sigi=sigi, log_label="AAS BOM")
 
 
 def _get_process_operation_status(
@@ -702,9 +680,9 @@ def _process_shell(
     # Step 6b: BOM material PCF
     materials_breakdown: dict[str, dict[str, Any]] = {}
     if cfg.get("pcf_include_bom", True) and all_materials:
-        from app.services.material_pcf import material_breakdown_for
+        from app.services.material_pcf import fetch_material_pcf_map, material_breakdown_for
 
-        pcf_map = _fetch_aas_material_pcf_map(sigi, all_materials, cfg)
+        pcf_map = fetch_material_pcf_map(list(all_materials.keys()), sigi=sigi, log_label="AAS BOM")
         materials_breakdown, _ = material_breakdown_for(all_materials, pcf_map)
 
     # Step 7+8: build PCF report (delegates to pcf_builder for the SiGREEN dict shape)

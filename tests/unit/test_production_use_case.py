@@ -6,8 +6,10 @@ from typing import Any
 
 import pytest
 
-from app.application.mes_workflow import MissingConsumptionForWorkOrderError
-from app.application.use_cases.production_use_case import ProductionUseCase
+from app.application.use_cases.production_use_case import (
+    MissingConsumptionForWorkOrderError,
+    ProductionUseCase,
+)
 from app.models.production import ProductionResults
 from tests.fixtures import http_payloads
 
@@ -77,3 +79,37 @@ def test_execute_skips_bom_when_pcf_include_bom_disabled() -> None:
 
     assert bom_calls["count"] == 0
     assert captured["materials_breakdown"] is None
+
+
+def test_execute_passes_materials_breakdown_when_bom_enabled() -> None:
+    """Default ``pcf_include_bom`` (missing → True) must fold the BOM into the report builder."""
+    captured: dict[str, Any] = {}
+
+    def fake_create(*, bill_of_process, data, materials_breakdown):
+        captured["materials_breakdown"] = materials_breakdown
+        return {"productCarbonFootprint": 110.0}
+
+    use_case = ProductionUseCase(
+        load_app_config=lambda: {},  # pcf_include_bom missing → treated as True
+        get_bop_for_work_order=lambda **_kw: {"OP10": 100.0},
+        get_materials_cf_breakdown=lambda *_a, **_k: {"Bolt": {"carbon_footprint_kg": 10.0}},
+        create_own_emission_cf_report=fake_create,
+        submit_factory_emissions=lambda **_kw: "uuid",
+        update_pcf_for_work_order=lambda **_kw: None,
+    )
+    use_case.execute(db_path=Path("/tmp/db.json"), data=_payload())
+
+    assert captured["materials_breakdown"] == {"Bolt": {"carbon_footprint_kg": 10.0}}
+
+
+def test_execute_returned_body_pins_response_keys() -> None:
+    """The router echoes whatever this dict contains; pin the contract."""
+    result = _make_use_case(submitted_uuid="uuid-123").execute(
+        db_path=Path("/tmp/db.json"), data=_payload()
+    )
+
+    assert result["workOrderName"] == http_payloads.prod_result_1["workOrderName"]
+    assert result["productId"] == http_payloads.prod_result_1["productId"]
+    assert result["productUuid"] == "uuid-123"
+    assert "producedQuantity" in result
+    assert "timestamp" in result
