@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 import uuid
 
 import pytest
@@ -39,9 +40,15 @@ def test_old_attempts_outside_window_are_pruned() -> None:
     """Attempts older than ``_WINDOW_SEC`` must be discarded — preventing permanent lockout
     after a slow drip of failures spread across hours."""
     client = f"prune-{uuid.uuid4().hex}"
-    # Pre-populate the bucket with stale timestamps far outside the window.
+    now = time.monotonic()
+    # Timestamps must be relative to *current* monotonic time. Hard-coded 0/1/2 only look
+    # "ancient" when monotonic() > _WINDOW_SEC (e.g. long-lived local dev machines); on a
+    # fresh CI runner monotonic() can be < 60s, making cutoff negative so nothing is pruned.
+    stale = [now - lrl._WINDOW_SEC - 30.0, now - lrl._WINDOW_SEC - 10.0, now - lrl._WINDOW_SEC - 1.0]
     with lrl._LOCK:
-        lrl._FAILED_ATTEMPTS[client] = [0.0, 1.0, 2.0]  # ancient monotonic times
-    # A fresh failure should prune the stale entries (line 23) and not exceed threshold.
+        lrl._FAILED_ATTEMPTS[client] = stale
     assert lrl.failed_login_exceeds_rate_limit(client) is False
-    assert lrl._FAILED_ATTEMPTS[client] == [pytest.approx(lrl._FAILED_ATTEMPTS[client][0])]
+    with lrl._LOCK:
+        bucket = lrl._FAILED_ATTEMPTS[client]
+    assert len(bucket) == 1
+    assert bucket[0] == pytest.approx(now, abs=1.0)
