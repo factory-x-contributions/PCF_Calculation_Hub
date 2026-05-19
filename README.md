@@ -63,10 +63,6 @@ Sample request bodies for manual calls live in [`tests/fixtures/http_payloads.py
 
 Integrators without source access should use [`docs/API_References_PCF_Calculation_Hub.md`](docs/API_References_PCF_Calculation_Hub.md) and the live OpenAPI document at `/openapi.json`.
 
-## Architecture
-
-![Catena-X demonstrator topology (AAS path)](docs/diagrams/AAS_case/3_AAS_PCF_Hub_Demonstrator_segmented.png)
-
 ### Configuration UI and authentication
 
 | Route | Purpose |
@@ -159,10 +155,6 @@ Register a **Web** application in Entra; redirect URI must match:
 `{PUBLIC_BASE_URL}{/stage when not local}/api/auth/microsoft/callback`
 
 Example local: `https://localhost:8443/api/auth/microsoft/callback` (must match `PUBLIC_BASE_URL` and how you open the app). See [`.env.example`](.env.example) for `MICROSOFT_ENTRA_*`, `ENTRA_BOOTSTRAP_ADMIN_EMAILS`, `ALLOWED_USERS_*`, and `ENABLE_LEGACY_PASSWORD_LOGIN`.
-
-## CI/CD (GitHub Actions)
-
-[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on `main` pushes and pull requests: Python 3.11, `pip install -r requirements.txt`, pytest with coverage, Codecov upload.
 
 ## Software version compatibility
 
