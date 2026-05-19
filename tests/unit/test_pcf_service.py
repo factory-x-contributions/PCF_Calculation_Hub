@@ -71,6 +71,31 @@ def test_get_or_create_retries_create_and_relooks_up_on_failure() -> None:
     assert created is False
 
 
+def test_get_or_create_wraps_unexpected_exception_as_runtime_error() -> None:
+    """A non-HTTPError exception (e.g. ConnectionError) on lookup must surface as RuntimeError —
+    callers want a single, well-typed error and a product_id in the message."""
+    sigi = MagicMock(factory_id="f1")
+    sigi.get_product_uuid.side_effect = ConnectionError("network down")
+    with pytest.raises(RuntimeError, match="SiGREEN get_product_uuid failed"):
+        pcf_service.get_or_create_product_uuid(sigi, "P1")
+
+
+def test_get_or_create_swallows_relookup_exception_during_retry() -> None:
+    """If create *and* re-lookup both raise on every attempt, the function still surfaces the
+    create error wrapped in RuntimeError — it must not propagate the re-lookup error."""
+    sigi = MagicMock(factory_id="f1")
+    sigi.get_product_uuid.side_effect = [
+        _http_error(404),       # initial lookup
+        RuntimeError("boom1"),  # re-lookup attempt 1
+        RuntimeError("boom2"),  # re-lookup attempt 2
+        RuntimeError("boom3"),  # re-lookup attempt 3
+    ]
+    sigi.create_product.side_effect = RuntimeError("create blew up")
+    with patch("app.services.pcf_service.time.sleep"):
+        with pytest.raises(RuntimeError, match="create_product failed"):
+            pcf_service.get_or_create_product_uuid(sigi, "P1")
+
+
 def test_submit_factory_emissions_calls_send_with_resolved_uuid() -> None:
     fake_sigi = MagicMock(factory_id="f1")
     fake_sigi.get_product_uuid.return_value = "uuid-x"

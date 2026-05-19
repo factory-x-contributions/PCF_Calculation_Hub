@@ -146,3 +146,93 @@ def test_client_ip_unknown_when_no_client() -> None:
     req.client = None
     with patch.object(settings, "trust_forwarded_headers", False):
         assert client_ip_for_rate_limit(req) == "unknown"
+
+
+# -- verify_session_token: token payload variants ------------------------------------------
+
+
+def _sign(payload: str) -> str:
+    """Sign an arbitrary string with the live session serializer."""
+    from app.services.security_service import _get_serializer
+
+    return _get_serializer().dumps(payload)
+
+
+def test_verify_session_token_rejects_malformed_json_with_brace_prefix() -> None:
+    """When the payload looks like JSON (starts with ``{``) but isn't valid JSON, the function returns None."""
+    token = _sign("{ not-json")
+    from app.services.security_service import verify_session_token
+
+    assert verify_session_token(token) is None
+
+
+def test_verify_session_token_rejects_wrong_version() -> None:
+    import json
+    token = _sign(json.dumps({"v": 1, "kind": "local", "principal": "admin"}))
+    from app.services.security_service import verify_session_token
+
+    assert verify_session_token(token) is None
+
+
+def test_verify_session_token_rejects_unknown_kind() -> None:
+    import json
+    token = _sign(json.dumps({"v": 2, "kind": "service", "principal": "admin"}))
+    from app.services.security_service import verify_session_token
+
+    assert verify_session_token(token) is None
+
+
+def test_verify_session_token_rejects_blank_principal() -> None:
+    import json
+    token = _sign(json.dumps({"v": 2, "kind": "local", "principal": "   "}))
+    from app.services.security_service import verify_session_token
+
+    assert verify_session_token(token) is None
+
+
+# -- legacy username|timestamp path ----------------------------------------------------------
+
+
+def test_verify_session_token_accepts_legacy_username_pipe_timestamp() -> None:
+    """v1 tokens used a ``username|timestamp`` string format — must keep working until rotated."""
+    token = _sign("admin|1700000000")
+    from app.services.security_service import verify_session_token
+
+    with patch("app.services.security_service._effective_username", return_value="admin"):
+        assert verify_session_token(token) == "admin"
+
+
+def test_verify_session_token_rejects_legacy_format_with_wrong_user() -> None:
+    token = _sign("attacker|1700000000")
+    from app.services.security_service import verify_session_token
+
+    with patch("app.services.security_service._effective_username", return_value="admin"):
+        assert verify_session_token(token) is None
+
+
+# -- require_admin_session --------------------------------------------------------------
+
+
+def test_require_admin_session_rejects_non_admin_with_403() -> None:
+    """A valid session whose principal is not an admin must raise HTTP 403."""
+    from fastapi import HTTPException
+
+    from app.services.security_service import require_admin_session
+
+    req = MagicMock()
+    req.cookies.get.return_value = "tok"
+    with patch("app.services.security_service.verify_session_token", return_value="alice@example.com"):
+        with patch("app.services.user_directory_service.is_user_admin", return_value=False):
+            with pytest.raises(HTTPException) as exc:
+                require_admin_session(req)
+    assert exc.value.status_code == 403
+
+
+def test_require_admin_session_returns_principal_for_admin() -> None:
+    from app.services.security_service import require_admin_session
+
+    req = MagicMock()
+    req.cookies.get.return_value = "tok"
+    with patch("app.services.security_service.verify_session_token", return_value="admin"):
+        with patch("app.services.user_directory_service.is_user_admin", return_value=True):
+            assert require_admin_session(req) == "admin"

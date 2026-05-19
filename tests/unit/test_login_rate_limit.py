@@ -33,3 +33,15 @@ def test_distinct_clients_independent() -> None:
     for _ in range(lrl._MAX_FAILURES):
         lrl.failed_login_exceeds_rate_limit(a)
     assert lrl.failed_login_exceeds_rate_limit(b) is False
+
+
+def test_old_attempts_outside_window_are_pruned() -> None:
+    """Attempts older than ``_WINDOW_SEC`` must be discarded — preventing permanent lockout
+    after a slow drip of failures spread across hours."""
+    client = f"prune-{uuid.uuid4().hex}"
+    # Pre-populate the bucket with stale timestamps far outside the window.
+    with lrl._LOCK:
+        lrl._FAILED_ATTEMPTS[client] = [0.0, 1.0, 2.0]  # ancient monotonic times
+    # A fresh failure should prune the stale entries (line 23) and not exceed threshold.
+    assert lrl.failed_login_exceeds_rate_limit(client) is False
+    assert lrl._FAILED_ATTEMPTS[client] == [pytest.approx(lrl._FAILED_ATTEMPTS[client][0])]

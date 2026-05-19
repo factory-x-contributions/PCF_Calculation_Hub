@@ -94,3 +94,49 @@ def test_material_breakdown_skips_unknown_materials() -> None:
     breakdown, total = material_breakdown_for(materials, pcf_map={})
     assert breakdown == {}
     assert total == 0.0
+
+
+def test_returns_empty_when_sigi_factory_returns_none() -> None:
+    """If no explicit ``sigi`` is given AND the factory returns None (SiGREEN unconfigured),
+    the function must return an empty map without raising — callers cope by skipping BOM."""
+    with patch("app.services.material_pcf.load_app_config", return_value=_config()):
+        with patch(
+            "app.services.material_pcf.build_sigreen_for_material_lookup",
+            return_value=None,
+        ):
+            assert fetch_material_pcf_map(["A"]) == {}
+
+
+def test_skips_blank_identifiers() -> None:
+    """Materials with empty identifiers must not be looked up — protects against bad MES rows."""
+    sigi = MagicMock()
+    sigi.get_material_pcf_per_unit_kg.return_value = {"total": 1.0}
+    with patch("app.services.material_pcf.load_app_config", return_value=_config()):
+        result = fetch_material_pcf_map(["   ", "", None], sigi=sigi)
+    assert result == {}
+    sigi.get_material_pcf_per_unit_kg.assert_not_called()
+
+
+def test_swallows_lookup_exception_and_skips_material(caplog) -> None:
+    """A SiGREEN error on one material must not abort the whole lookup — log & skip."""
+    sigi = MagicMock()
+    sigi.get_material_pcf_per_unit_kg.side_effect = [
+        RuntimeError("502 bad gateway"),
+        {"total": 1.0, "production": 0.7, "distribution": 0.3},
+    ]
+    with patch("app.services.material_pcf.load_app_config", return_value=_config()):
+        result = fetch_material_pcf_map(["BadOne", "GoodOne"], sigi=sigi)
+    assert "BadOne" not in result
+    assert result.get("GoodOne", {}).get("total") == 1.0
+    assert any("PCF lookup failed" in r.message for r in caplog.records)
+
+
+def test_returns_empty_when_identifier_mapping_is_not_dict() -> None:
+    """Defensive: a corrupt ``material_identifier_mapping`` (non-dict) must collapse to an empty mapping."""
+    sigi = MagicMock()
+    sigi.get_material_pcf_per_unit_kg.return_value = {"total": 1.0}
+    cfg = _config(material_identifier_mapping="not-a-dict")
+    with patch("app.services.material_pcf.load_app_config", return_value=cfg):
+        result = fetch_material_pcf_map(["A"], sigi=sigi)
+    # Mapping is dropped, original key is used as-is
+    assert "A" in result

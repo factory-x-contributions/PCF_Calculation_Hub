@@ -722,7 +722,7 @@ def _process_shell(
         t_start=_aas_time_to_sigreen_format(t_start),
         t_end=_aas_time_to_sigreen_format(t_end),
         quantity=1,
-        batch_number=None,
+        batch_number=work_order_name,
     )
     total_pcf = float(pcf_report.get("productCarbonFootprint") or 0.0)
 

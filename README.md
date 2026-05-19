@@ -65,8 +65,6 @@ Integrators without source access should use [`docs/API_References_PCF_Calculati
 
 ## Architecture
 
-The diagram below shows the Catena-X demonstrator topology for the **AAS integration path** (MES-oriented diagrams live under [`docs/diagrams/MES_case/`](docs/diagrams/MES_case/); external interfaces are summarized in [`docs/diagrams/PCF_Hub_external_communications.mmd`](docs/diagrams/PCF_Hub_external_communications.mmd)).
-
 ![Catena-X demonstrator topology (AAS path)](docs/diagrams/AAS_case/3_AAS_PCF_Hub_Demonstrator_segmented.png)
 
 ### Configuration UI and authentication
