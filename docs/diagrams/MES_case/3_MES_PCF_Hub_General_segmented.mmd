@@ -6,15 +6,13 @@ config:
 sequenceDiagram
     autonumber
 
-box rgb(7, 21, 32) Siemens Edge <br> Device [227G]
+    %% #box rgb(4, 20, 10) Cloud — MES and PCF management toolchain
         participant Agg as Aggregation Layer
-end
-    box rgb(4, 20, 10) Cloud — AWS
+        participant MES as MES
+        participant PCF as PCF Calculation Tool
+        participant SG as PCF Management Tool
+    %% #end
 
-        participant MES as MES<br>(OpCenter-X)
-        participant PCF as PCF Calculation Hub
-        participant SG as PCF Management Tool<br>(SiGREEN)
-    end
 
 
  rect rgb(60, 9, 44) 
@@ -35,7 +33,7 @@ end
         rect rgb(10, 55, 35) 
          Note over PCF, SG: Calculate priliminary BOM carbon footprint
             loop For each consumed material identifier
-                PCF->>SG: GET material PCF per unit [REST-API]
+                PCF->>SG: GET material PCF per unit 
                 SG-->>PCF: upstream / cradle PCF data (kg CO2e per unit)
             end
         end
@@ -54,11 +52,11 @@ loop At regular intervals, for completed work orders ONLY with sufficient idle/b
     %% end
     PCF->>PCF: Load BOP + materials + idle share from database<br>build PCF report (BOP / BOM / factory idle)
 
-    PCF->>SG: Resolve product UUID using internal productId<br>(GET, or create product if missing) [REST-API]
+    PCF->>SG: Resolve product UUID using internal productId<br>(GET, or create product if missing)
     SG-->>PCF: product UUID
 
  Note over PCF, SG: Report total product carbon footprint (PCF) 
-    PCF->>SG: POST factory emissions / PCF report [REST-API]
+    PCF->>SG: POST factory emissions / PCF report
     SG-->>PCF: Ack (PCF stored in SiGREEN)
 
     PCF->>PCF: Prisist PCF report snapshot within work orders' database

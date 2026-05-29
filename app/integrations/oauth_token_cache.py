@@ -53,10 +53,12 @@ class TokenCache:
     def __init__(
         self,
         *,
-        token_url: str,
+        token_url: str = "",
+        token_url_provider: Callable[[], str] | None = None,
         client_id_provider: Callable[[], str],
         client_secret_provider: Callable[[], str],
         extra_body: dict[str, str] | None = None,
+        extra_body_provider: Callable[[], dict[str, str]] | None = None,
         body_format: str = "json",
         leeway_seconds: int = _DEFAULT_LEEWAY_SECONDS,
         clock: Callable[[], float] = time.time,
@@ -64,10 +66,14 @@ class TokenCache:
     ) -> None:
         if body_format not in ("json", "form"):
             raise ValueError(f"body_format must be 'json' or 'form', got {body_format!r}")
+        if not token_url and not token_url_provider:
+            raise ValueError("token_url or token_url_provider is required")
         self._token_url = token_url
+        self._token_url_provider = token_url_provider
         self._client_id_provider = client_id_provider
         self._client_secret_provider = client_secret_provider
         self._extra_body = dict(extra_body or {})
+        self._extra_body_provider = extra_body_provider
         self._body_format = body_format
         self._leeway_seconds = leeway_seconds
         self._clock = clock
@@ -80,6 +86,16 @@ class TokenCache:
     def clear(self) -> None:
         """Drop any cached token. Call when credentials change."""
         self._cached = None
+
+    def _resolve_token_url(self) -> str:
+        if self._token_url_provider is not None:
+            return (self._token_url_provider() or "").strip() or self._token_url
+        return self._token_url
+
+    def _resolve_extra_body(self) -> dict[str, str]:
+        if self._extra_body_provider is not None:
+            return dict(self._extra_body_provider())
+        return dict(self._extra_body)
 
     def get(self) -> str | None:
         """Return a fresh access token, or ``None`` if no credentials are configured.
@@ -105,19 +121,20 @@ class TokenCache:
             "grant_type": "client_credentials",
             "client_id": client_id,
             "client_secret": client_secret,
-            **self._extra_body,
+            **self._resolve_extra_body(),
         }
         post = self._http_post if self._http_post is not None else requests.post
+        token_url = self._resolve_token_url()
         if self._body_format == "json":
             response = post(
-                self._token_url,
+                token_url,
                 json=body,
                 headers={"Content-Type": "application/json"},
                 timeout=10,
             )
         else:
             response = post(
-                self._token_url,
+                token_url,
                 data=body,
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
                 timeout=10,

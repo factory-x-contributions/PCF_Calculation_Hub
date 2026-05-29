@@ -11,7 +11,10 @@ from app.core.logging import memory_log_handler
 from app.core.protected_pages import serve_protected_html
 
 from app.services.config_service import (
+    DEFAULT_SIGREEN_BASE_URL,
+    DEFAULT_SIGREEN_TOKEN_URL,
     ensure_sigreen_factory_id,
+    get_sigreen_token_url,
     load_app_config,
     save_app_config,
     validate_sigreen_credentials,
@@ -172,7 +175,7 @@ async def post_config(
         return JSONResponse(status_code=400, content={"detail": "JSON object expected."})
     allowed = {
         "data_source", "pcf_tool",
-        "sigreen_base_url", "sigreen_client_id", "sigreen_client_secret",
+        "sigreen_base_url", "sigreen_token_url", "sigreen_client_id", "sigreen_client_secret",
         "sigreen_factory_name", "sigreen_factory_id",
         "sigreen_product_identifier_type",
         "carbon_intensity_source", "carbon_intensity_constant_gco2",
@@ -190,19 +193,45 @@ async def post_config(
         new_secret = (new_secret or "").strip()
     effective_id = new_id if (new_id is not None and new_id != "") else current.get("sigreen_client_id", "")
     effective_secret = new_secret if (new_secret is not None and new_secret != "") else current.get("sigreen_client_secret", "")
+    new_token_url = body.get("sigreen_token_url")
+    if new_token_url is not None:
+        new_token_url = (new_token_url or "").strip()
+    effective_token_url = (
+        new_token_url
+        if (new_token_url is not None and new_token_url != "")
+        else get_sigreen_token_url(current)
+    )
+    new_base_url = body.get("sigreen_base_url")
+    if new_base_url is not None:
+        new_base_url = (new_base_url or "").strip()
+    effective_base_url = (
+        new_base_url
+        if (new_base_url is not None and new_base_url != "")
+        else (current.get("sigreen_base_url") or "").strip() or DEFAULT_SIGREEN_BASE_URL
+    )
 
     # If we're changing any Sigreen credential, validate before saving
     sigreen_changed = (
         (new_id is not None and new_id != current.get("sigreen_client_id"))
         or (new_secret is not None and new_secret != "" and new_secret != current.get("sigreen_client_secret"))
     )
-    if sigreen_changed:
-        if not effective_id or not effective_secret:
+    sigreen_oauth_changed = (
+        sigreen_changed
+        or (new_token_url is not None and new_token_url != get_sigreen_token_url(current))
+        or (new_base_url is not None and new_base_url != (current.get("sigreen_base_url") or "").strip())
+    )
+    if sigreen_oauth_changed:
+        if sigreen_changed and (not effective_id or not effective_secret):
             return JSONResponse(
                 status_code=400,
                 content={"detail": "Client ID and Client Secret are both required for SiGREEN."},
             )
-        if not validate_sigreen_credentials(effective_id, effective_secret):
+        if effective_id and effective_secret and not validate_sigreen_credentials(
+            effective_id,
+            effective_secret,
+            token_url=effective_token_url,
+            base_url=effective_base_url,
+        ):
             return JSONResponse(
                 status_code=400,
                 content={"detail": "The credentials are not correct. Please check the Client ID and Client Secret."},
@@ -221,6 +250,8 @@ async def post_config(
                 v = max(0.0, min(1440.0, float(v)))
             except (ValueError, TypeError):
                 v = 0
+        if k == "sigreen_token_url" and isinstance(v, str):
+            v = (v or "").strip() or DEFAULT_SIGREEN_TOKEN_URL
         if k == "sigreen_product_identifier_type" and isinstance(v, str):
             v = (v or "Product ID").strip() or "Product ID"
         if k == "carbon_intensity_source" and v not in ("constant", "green_grid_compass"):
@@ -238,10 +269,11 @@ async def post_config(
         current["sigreen_factory_id"] = ""
     save_app_config(current)
     # Resolve factory_id from SiGREEN when SiGREEN config was saved
-    if any(k in body for k in ("sigreen_factory_name", "pcf_tool", "sigreen_base_url")):
-        if any(k in body for k in ("sigreen_client_id", "sigreen_client_secret")):
-            from app.integrations.sigreen import clear_sigreen_token_cache
-            clear_sigreen_token_cache()
+    if any(k in body for k in ("sigreen_client_id", "sigreen_client_secret", "sigreen_token_url", "sigreen_base_url")):
+        from app.integrations.sigreen import clear_sigreen_token_cache
+
+        clear_sigreen_token_cache()
+    if any(k in body for k in ("sigreen_factory_name", "pcf_tool", "sigreen_base_url", "sigreen_token_url")):
         ensure_sigreen_factory_id()
         current = load_app_config()
     return JSONResponse(content={"status": "ok", "config": current})

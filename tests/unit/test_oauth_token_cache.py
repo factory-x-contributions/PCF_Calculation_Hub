@@ -179,3 +179,41 @@ def test_credential_providers_are_evaluated_each_call() -> None:
     creds["id"] = ""
     creds["secret"] = ""
     assert cache.get() is None  # config was zeroed → unauthenticated mode kicks in
+
+
+def test_token_url_provider_overrides_static_url() -> None:
+    """Live token URL changes (e.g. from the Config UI) must apply on the next refresh."""
+    urls = {"current": "https://example/token-a"}
+    post = MagicMock(return_value=_ok_response())
+    cache = TokenCache(
+        token_url="https://example/fallback",
+        token_url_provider=lambda: urls["current"],
+        client_id_provider=lambda: "id",
+        client_secret_provider=lambda: "secret",
+        http_post=post,
+    )
+    cache.get()
+    assert post.call_args[0][0] == "https://example/token-a"
+    urls["current"] = "https://example/token-b"
+    cache.clear()
+    cache.get()
+    assert post.call_args[0][0] == "https://example/token-b"
+
+
+def test_extra_body_provider_overrides_static_body() -> None:
+    audiences = {"current": "aud-a"}
+    post = MagicMock(return_value=_ok_response())
+    cache = TokenCache(
+        token_url="https://example/token",
+        client_id_provider=lambda: "id",
+        client_secret_provider=lambda: "secret",
+        extra_body={"audience": "fallback"},
+        extra_body_provider=lambda: {"audience": audiences["current"]},
+        http_post=post,
+    )
+    cache.get()
+    assert post.call_args[1]["json"]["audience"] == "aud-a"
+    audiences["current"] = "aud-b"
+    cache.clear()
+    cache.get()
+    assert post.call_args[1]["json"]["audience"] == "aud-b"

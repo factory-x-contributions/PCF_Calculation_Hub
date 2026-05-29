@@ -6,9 +6,15 @@ import sys
 from datetime import datetime, timezone
 
 from app.integrations.oauth_token_cache import TokenCache
+from app.services.config_service import (
+    DEFAULT_SIGREEN_TOKEN_URL,
+    get_sigreen_audience,
+    get_sigreen_token_url,
+)
 
-_SIGREEN_TOKEN_URL = "https://siemens-00340.eu.auth0.com/oauth/token/"
-_SIGREEN_AUDIENCE = "https://app-uat.sigreen-playground.siemens.cloud/"
+
+def _sigreen_oauth_extra_body() -> dict[str, str]:
+    return {"audience": get_sigreen_audience()}
 
 
 def _resolve_credential(env_key: str, config_key: str) -> str:
@@ -42,10 +48,11 @@ def _sigreen_client_secret() -> str:
 # object so ``unittest.mock.patch`` on those names reaches the cache; a direct closure would freeze
 # the original function reference at import time and tests could not stub the credentials.
 _SIGREEN_TOKEN_CACHE = TokenCache(
-    token_url=_SIGREEN_TOKEN_URL,
+    token_url=DEFAULT_SIGREEN_TOKEN_URL,
+    token_url_provider=get_sigreen_token_url,
     client_id_provider=lambda: sys.modules[__name__]._sigreen_client_id(),
     client_secret_provider=lambda: sys.modules[__name__]._sigreen_client_secret(),
-    extra_body={"audience": _SIGREEN_AUDIENCE},
+    extra_body_provider=_sigreen_oauth_extra_body,
     body_format="json",
 )
 

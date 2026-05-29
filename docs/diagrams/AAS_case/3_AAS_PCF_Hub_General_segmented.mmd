@@ -7,15 +7,12 @@ config:
 sequenceDiagram
     autonumber
 
-    
-    box rgb(7, 21, 32) Siemens Edge <br> Device [227G]
+    %% #box rgb(4, 20, 10) Cloud — AAS and PCF management toolchain
         participant Agg as Aggregation Layer
-    end
-    box rgb(4, 20, 10) Cloud - AWS
-        participant aas as AAS <br>(AssetFox or BaSyx)
-        participant Hub as PCF calculation Hub
-        participant SG as PCF management Tool<br>(SiGREEN)
-    end
+        participant aas as AAS 
+        participant Hub as PCF calculation Tool
+        participant SG as PCF management Tool
+    %% #end
 
     rect rgb(60, 9, 44)
     Note over Agg, Hub: Concurrent idle-time consumption reporting
@@ -28,7 +25,7 @@ sequenceDiagram
     rect rgb(18, 11, 41)
     Note over Hub, aas: Discover completed production phases (digital laufzettel shells)<br> ready for carbon footprint reporting (At regular schedules or triggered events)
         loop Until the queue returns no further unprocessed completed shell (each: latest, unprocessed, all operations terminal)
-            Hub->>aas: GET next shell from queue [REST-API]
+            Hub->>aas: GET next shell from queue
             aas-->>Hub: Shell reference, status, and operation data
             Hub-->>Hub: Put completed shell in queue buffer for processing
         end
@@ -39,7 +36,7 @@ sequenceDiagram
 
         loop Each completed shell reference from queue buffer
            rect rgb(18, 11, 41)
-            Hub->>aas: GET bill of process and consumption [REST-API]<br>(operations, energy, materials, time bounds, product identifiers)
+            Hub->>aas: GET bill of process and consumption <br>(operations, energy, materials, time bounds, product identifiers)
             aas-->>Hub: Production data for the work order
             end
             rect rgb(10, 55, 35)
@@ -52,14 +49,14 @@ sequenceDiagram
  rect rgb(18, 64, 66)
             Hub->>Hub: Merge process and material contributions<br>Allocate idle share, derive product PCF
 
-            Hub->>aas: GET product UUID [REST-API]
+            Hub->>aas: GET product UUID 
             aas-->>Hub: product UUID
 
             Note over Hub, SG: Report total product carbon footprint (PCF) to SiGREEN
-            Hub->>SG: POST factory emissions / PCF report [REST-API]
+            Hub->>SG: POST factory emissions / PCF report 
             SG-->>Hub: Ack (PCF stored in SiGREEN)
 
             Hub->>Hub: Persist PCF report snapshot within work orders' database and <br> remove shell reference from queue buffer
-            Hub->>aas: Update shell processing status to completed<br>(status, references, audit trail) [REST-API]
+            Hub->>aas: Update shell processing status to completed<br>(status, references, audit trail)
         end
     end

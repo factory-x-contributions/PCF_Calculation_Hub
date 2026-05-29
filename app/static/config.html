@@ -163,6 +163,12 @@
               <div class="form-group">
                 <label for="sigreen_base_url">Base URL</label>
                 <input type="url" id="sigreen_base_url" name="sigreen_base_url" placeholder="https://app-uat.sigreen-playground.siemens.cloud/api">
+                <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">SiGREEN REST API base URL. The OAuth audience is derived automatically from this URL.</p>
+              </div>
+              <div class="form-group">
+                <label for="sigreen_token_url">OAuth token URL</label>
+                <input type="url" id="sigreen_token_url" name="sigreen_token_url" placeholder="https://siemens-00340.eu.auth0.com/oauth/token/">
+                <p class="config-card-subtitle" style="margin: 0.25rem 0 0 0; font-size: 0.75rem;">OAuth2 client-credentials endpoint (UAT: siemens-00340, production: siemens-00236).</p>
               </div>
               <div class="form-group">
                 <label for="sigreen_client_id">Client ID</label>
@@ -590,6 +596,7 @@
       currentConfig = await res.json();
       document.getElementById('sigreen_factory_name').value = currentConfig.sigreen_factory_name || '';
       document.getElementById('sigreen_base_url').value = currentConfig.sigreen_base_url || '';
+      document.getElementById('sigreen_token_url').value = currentConfig.sigreen_token_url || '';
       document.getElementById('sigreen_client_id').value = currentConfig.sigreen_client_id || '';
       document.getElementById('sigreen_client_secret').value = currentConfig.sigreen_client_secret || '';
       document.getElementById('aas_type').value = currentConfig.aas_type || 'AAS (AssetFox)';
@@ -650,6 +657,7 @@
           pcf_tool: 'sigreen',
           sigreen_factory_name: document.getElementById('sigreen_factory_name').value.trim(),
           sigreen_base_url: document.getElementById('sigreen_base_url').value.trim(),
+          sigreen_token_url: document.getElementById('sigreen_token_url').value.trim(),
           sigreen_client_id: document.getElementById('sigreen_client_id').value.trim(),
           sigreen_client_secret: document.getElementById('sigreen_client_secret').value.trim(),
           carbon_intensity_source: carbonSource,

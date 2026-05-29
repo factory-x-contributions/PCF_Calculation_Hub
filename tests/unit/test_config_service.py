@@ -41,6 +41,72 @@ def test_get_sigreen_credentials_strips_whitespace(isolated_config_path) -> None
     assert csec == "csec"
 
 
+def test_get_sigreen_token_url_falls_back_to_default(isolated_config_path) -> None:
+    assert config_service.get_sigreen_token_url() == config_service.DEFAULT_SIGREEN_TOKEN_URL
+
+
+def test_get_sigreen_token_url_reads_config(isolated_config_path) -> None:
+    config_service.save_app_config({"sigreen_token_url": "https://custom.example/token"})
+    assert config_service.get_sigreen_token_url() == "https://custom.example/token"
+
+
+def test_validate_sigreen_credentials_uses_custom_token_url() -> None:
+    fake_response = MagicMock(status_code=200)
+    fake_response.json.return_value = {"access_token": "abc"}
+    with patch("app.services.config_service.requests.post", return_value=fake_response) as post:
+        assert config_service.validate_sigreen_credentials(
+            "id", "secret", token_url="https://custom.example/token"
+        ) is True
+    assert post.call_args[0][0] == "https://custom.example/token"
+
+
+def test_validate_sigreen_credentials_uses_explicit_audience_override() -> None:
+    fake_response = MagicMock(status_code=200)
+    fake_response.json.return_value = {"access_token": "abc"}
+    with patch("app.services.config_service.requests.post", return_value=fake_response) as post:
+        assert config_service.validate_sigreen_credentials(
+            "id",
+            "secret",
+            token_url="https://custom.example/token",
+            audience="https://app.sigreen.siemens.com/",
+        ) is True
+    assert post.call_args[1]["json"]["audience"] == "https://app.sigreen.siemens.com/"
+
+
+def test_infer_sigreen_audience_from_base_url_prod() -> None:
+    assert (
+        config_service.infer_sigreen_audience_from_base_url("https://app.sigreen.siemens.com/api")
+        == "https://app.sigreen.siemens.com/"
+    )
+
+
+def test_infer_sigreen_audience_from_base_url_uat() -> None:
+    assert (
+        config_service.infer_sigreen_audience_from_base_url(
+            "https://app-uat.sigreen-playground.siemens.cloud/api/"
+        )
+        == "https://app-uat.sigreen-playground.siemens.cloud/"
+    )
+
+
+def test_get_sigreen_audience_infers_from_config_base_url(isolated_config_path) -> None:
+    config_service.save_app_config({"sigreen_base_url": "https://app.sigreen.siemens.com/api"})
+    assert config_service.get_sigreen_audience() == "https://app.sigreen.siemens.com/"
+
+
+def test_validate_sigreen_credentials_infers_audience_from_base_url() -> None:
+    fake_response = MagicMock(status_code=200)
+    fake_response.json.return_value = {"access_token": "abc"}
+    with patch("app.services.config_service.requests.post", return_value=fake_response) as post:
+        assert config_service.validate_sigreen_credentials(
+            "id",
+            "secret",
+            token_url="https://custom.example/token",
+            base_url="https://app.sigreen.siemens.com/api",
+        ) is True
+    assert post.call_args[1]["json"]["audience"] == "https://app.sigreen.siemens.com/"
+
+
 def test_validate_sigreen_credentials_rejects_empty() -> None:
     """Missing creds short-circuit before any network call."""
     assert config_service.validate_sigreen_credentials("", "secret") is False

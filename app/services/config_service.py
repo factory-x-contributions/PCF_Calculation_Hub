@@ -9,6 +9,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from urllib.parse import urlparse
+
 import requests
 
 from app.config.settings import settings
@@ -16,8 +18,10 @@ from app.storage import JsonStore
 
 # Default SiGREEN base URL and credential-validation endpoints (UAT).
 DEFAULT_SIGREEN_BASE_URL = "https://app-uat.sigreen-playground.siemens.cloud/api"
-SIGREEN_TOKEN_URL = "https://siemens-00340.eu.auth0.com/oauth/token/"
-SIGREEN_AUDIENCE = "https://app-uat.sigreen-playground.siemens.cloud/"
+DEFAULT_SIGREEN_TOKEN_URL = "https://siemens-00340.eu.auth0.com/oauth/token/"
+DEFAULT_SIGREEN_AUDIENCE = "https://app-uat.sigreen-playground.siemens.cloud/"
+SIGREEN_TOKEN_URL = DEFAULT_SIGREEN_TOKEN_URL  # backwards-compatible alias
+SIGREEN_AUDIENCE = DEFAULT_SIGREEN_AUDIENCE  # backwards-compatible alias
 
 logger = logging.getLogger("pcf_creator_app")
 
@@ -25,6 +29,7 @@ DEFAULT_APP_CONFIG: dict[str, Any] = {
     "data_source": "",
     "pcf_tool": "",
     "sigreen_base_url": DEFAULT_SIGREEN_BASE_URL,
+    "sigreen_token_url": DEFAULT_SIGREEN_TOKEN_URL,
     "sigreen_client_id": "",
     "sigreen_client_secret": "",
     "sigreen_factory_name": "OPC",
@@ -70,6 +75,32 @@ def get_sigreen_credentials() -> tuple[str, str]:
     )
 
 
+def get_sigreen_token_url(cfg: dict[str, Any] | None = None) -> str:
+    """Return the configured SiGREEN OAuth token URL, falling back to the UAT default."""
+    data = cfg if cfg is not None else load_app_config()
+    return (data.get("sigreen_token_url") or "").strip() or DEFAULT_SIGREEN_TOKEN_URL
+
+
+def infer_sigreen_audience_from_base_url(base_url: str) -> str:
+    """Derive the Auth0 audience from the SiGREEN REST base URL (origin + trailing slash)."""
+    url = (base_url or "").strip().rstrip("/")
+    if not url:
+        return DEFAULT_SIGREEN_AUDIENCE
+    if url.endswith("/api"):
+        url = url[: -len("/api")]
+    parsed = urlparse(url)
+    if not parsed.scheme or not parsed.netloc:
+        return DEFAULT_SIGREEN_AUDIENCE
+    return f"{parsed.scheme}://{parsed.netloc}/"
+
+
+def get_sigreen_audience(cfg: dict[str, Any] | None = None) -> str:
+    """Return the SiGREEN OAuth audience inferred from the configured REST base URL."""
+    data = cfg if cfg is not None else load_app_config()
+    base_url = (data.get("sigreen_base_url") or "").strip() or DEFAULT_SIGREEN_BASE_URL
+    return infer_sigreen_audience_from_base_url(base_url)
+
+
 def ensure_sigreen_factory_id() -> None:
     """Re-resolve sigreen_factory_id from the SiGREEN API and persist it. Idempotent."""
     cfg = load_app_config()
@@ -99,18 +130,32 @@ def ensure_sigreen_factory_id() -> None:
         )
 
 
-def validate_sigreen_credentials(client_id: str, client_secret: str) -> bool:
+def validate_sigreen_credentials(
+    client_id: str,
+    client_secret: str,
+    *,
+    token_url: str | None = None,
+    audience: str | None = None,
+    base_url: str | None = None,
+) -> bool:
     """Try the SiGREEN OAuth token endpoint; return True iff a token comes back."""
     if not client_id or not client_secret:
         return False
+    resolved_token_url = (token_url or "").strip() or get_sigreen_token_url()
+    resolved_audience = (audience or "").strip()
+    if not resolved_audience:
+        if (base_url or "").strip():
+            resolved_audience = infer_sigreen_audience_from_base_url(base_url)
+        else:
+            resolved_audience = get_sigreen_audience()
     try:
         response = requests.post(
-            SIGREEN_TOKEN_URL,
+            resolved_token_url,
             json={
                 "grant_type": "client_credentials",
                 "client_id": client_id,
                 "client_secret": client_secret,
-                "audience": SIGREEN_AUDIENCE,
+                "audience": resolved_audience,
             },
             headers={"Content-Type": "application/json"},
             timeout=10,

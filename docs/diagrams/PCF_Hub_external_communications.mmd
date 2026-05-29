@@ -4,41 +4,98 @@ config:
   look: classic
 ---
 
-%% PCF Calculation Hub — outbound/inbound communication with other systems
-%% Render in Mermaid-compatible viewers, GitHub, or docs tooling.
+%% PCF Calculation Hub — External Communications Architecture Diagram
+%% Optimized for visual clarity, modularity, and layered abstraction.
 
 flowchart TB
-    subgraph producers [Upstream data and operators]
-        MES["MES / Opcenter-X or equivalent"]
-        MW["Middleware or edge service"]
-        UAG["User browser"]
+    %% --- Custom Styles & Classes for Modern Neo-Dark Look ---
+    classDef clientStyle fill:#1a2b3c,stroke:#2196f3,stroke-width:2px,color:#e0e0e0;
+    classDef coreUIStyle fill:#2d1b4e,stroke:#9c27b0,stroke-width:2px,color:#e0e0e0;
+    classDef coreEngineStyle fill:#1e352f,stroke:#00e676,stroke-width:2px,color:#e0e0e0;
+    classDef identityStyle fill:#3e1f1f,stroke:#ff5252,stroke-width:2px,color:#e0e0e0;
+    classDef persistStyle fill:#332a15,stroke:#ffb300,stroke-width:2px,color:#e0e0e0;
+    classDef externalStyle fill:#263238,stroke:#b0bec5,stroke-width:2px,color:#e0e0e0;
+    
+    %% --- LAYER 1: Inbound Clients & Operators (Shopfloor & User Interfaces) ---
+    subgraph clients ["Shopfloor Data Sources & Operators"]
+        MES["MES (Opcenter-X)<br><i>Orchestrates Work Orders</i>"]
+        EDGE["Edge/Middleware<br><i>e.g., IIH Aggregator Wizard</i>"]
+        Browser["User Browser<br><i>Operators & Admins</i>"]
     end
+    class MES,EDGE,Browser clientStyle;
 
-    subgraph hub ["PCF Calculation Hub (this app)"]
-        REST["REST API FastAPI"]
-        CFG["Config and login UI static pages"]
+    %% --- LAYER 2: Core Front-Door & Authentication ---
+    subgraph identity ["Identity & Authentication Layer"]
+        Entra["Microsoft Entra ID<br><i>OIDC Provider</i>"]
     end
+    class Entra identityStyle;
 
-    subgraph digitalTwin [Digital twin and PCF platforms]
-        AAS["AAS registry AssetFox BaSyx"]
-        SG["SiGREEN PCF API"]
+    subgraph coreUI ["PCF Calculation Hub: Presentation Plane"]
+        WebUI["Web UI Templates<br><i>/config, /work_order_records, /factory_energy_distribution</i>"]
+        Docs["OpenAPI Docs<br><i>/docs, /redoc, /openapi.json</i>"]
     end
+    class WebUI,Docs coreUIStyle;
 
-    subgraph identityAndData [Identity grid and persistence]
-        ENT["Microsoft Entra ID"]
-        GGC["Green Grid Compass CO2 API"]
-        S3["AWS S3 optional JSON mirror"]
+    subgraph coreEngine ["PCF Calculation Hub: Core Processing Engine"]
+        API["FastAPI REST API Router<br><i>HTTP Request Handler</i>"]
+        Calc["Calculation & Allocation Engine<br><i>PCF Formulation & Idle-Energy Allocation</i>"]
+        Poller["Background AAS Poller<br><i>Periodic Shell Processing Loop</i>"]
     end
+    class API,Calc,Poller coreEngineStyle;
 
-    MES -->|"POST /consumptionData POST /productionResults HTTPS"| REST
-    MW -->|"POST /idle_consumptions HTTPS"| REST
+    %% --- LAYER 3: Storage & Infrastructure ---
+    subgraph persistence ["Durable State & Storage Layer"]
+        LocalFile["Local JSON Datastores<br><i>data_base.json, factory_database.json,<br>app_config.json, allowed_users.json</i>"]
+        S3["AWS S3 Cloud Mirror<br><i>Durable Cloud JSON Persistence</i>"]
+    end
+    class LocalFile,S3 persistStyle;
 
-    UAG -->|"HTTPS pages /config /login /docs"| CFG
-    CFG --> REST
-    UAG -->|"OAuth2 OIDC redirect"| ENT
-    ENT -->|"callback /api/auth/microsoft/callback"| REST
+    %% --- LAYER 4: Downstream Platforms & Integration Ecosystem ---
+    subgraph externalPlatforms ["Outbound External Ecosystem"]
+        GGC["Green Grid Compass CO2 API<br><i>Hourly Grid CO2 Intensity</i>"]
+        AAS["AAS Registry (AssetFox / BaSyx)<br><i>Digital Twin & Shells for AAS-Mode</i>"]
+        SG["SiGREEN PCF API<br><i>Material PCF Lookup & Emissions Submission</i>"]
+    end
+    class GGC,AAS,SG externalStyle;
 
-    REST -->|"Registry shell BOP reads configured polling"| AAS
-    REST -->|"OAuth2 REST own emissions BOM material PCF"| SG
-    REST -->|"GET hourly CO2 intensity when configured"| GGC
-    REST -->|"Optional load save for DB config allowlist"| S3
+    %% --- Data Flows and Connections ---
+    
+    %% Inbound Shopfloor Ingestion
+    MES -->|"POST /consumptionData<br>POST /productionResults<br>(HTTPS)"| API
+    EDGE -->|"POST /idle_consumptions<br>(HTTPS)"| API
+    
+    %% Operator Session and Control
+    Browser -->|"GET /login, /config<br>(HTTPS Session)"| WebUI
+    Browser -->|"Inspect APIs<br>(Interactive /docs)"| Docs
+    Browser -->|"OAuth2 OIDC Redirect"| Entra
+    Entra -->|"Redirect Callback<br>/api/auth/microsoft/callback"| API
+    WebUI -->|"AJAX /api/* Calls"| API
+
+    %% Internal Processing Flows
+    API -->|"Distribute payloads"| Calc
+    Calc -->|"Read/Write Local DB"| LocalFile
+    Poller -->|"Triggers AAS processing cycle"| Calc
+    
+    %% State Sync
+    LocalFile <-->|"Durable backup & load"| S3
+
+    %% External Outbound Integrations
+    Calc -->|"GET hourly CO2 intensity<br>(when configured)"| GGC
+    Poller <-->|"Poll Shells, BOP, and Update status<br>(GET/POST /api/aas/*)"| AAS
+    Calc -->|"OAuth2 Material PCF Lookup &<br>POST Product Footprint Reports"| SG
+
+    %% --- Color-Coded Link Styling ---
+    linkStyle 0 stroke:#2196f3,stroke-width:2px;
+    linkStyle 1 stroke:#2196f3,stroke-width:2px;
+    linkStyle 2 stroke:#9c27b0,stroke-width:2px;
+    linkStyle 3 stroke:#9c27b0,stroke-width:2px;
+    linkStyle 4 stroke:#ff5252,stroke-width:2px;
+    linkStyle 5 stroke:#ff5252,stroke-width:2px;
+    linkStyle 6 stroke:#9c27b0,stroke-width:2px;
+    linkStyle 7 stroke:#00e676,stroke-width:2px;
+    linkStyle 8 stroke:#00e676,stroke-width:2px;
+    linkStyle 9 stroke:#00e676,stroke-width:2px;
+    linkStyle 10 stroke:#ffb300,stroke-width:2px;
+    linkStyle 11 stroke:#b0bec5,stroke-width:2px;
+    linkStyle 12 stroke:#b0bec5,stroke-width:2px;
+    linkStyle 13 stroke:#b0bec5,stroke-width:2px;
