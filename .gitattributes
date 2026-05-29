@@ -1,4 +1,6 @@
-# Mermaid diagrams must use LF line endings.
-# Some Mermaid renderers' Jison-based parser does not strip CR and
-# fails with "missing SD at 'sequenceDiagram\r'" on CRLF input.
-*.mmd text eol=lf
+# SPDX-FileCopyrightText: Copyright Siemens 2026
+# SPDX-License-Identifier: Apache-2.0
+# Mermaid diagrams must use LF line endings.
+# Some Mermaid renderers' Jison-based parser does not strip CR and
+# fails with "missing SD at 'sequenceDiagram\r'" on CRLF input.
+*.mmd text eol=lf

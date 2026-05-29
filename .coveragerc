@@ -1,11 +1,13 @@
-[run]
-branch = True
-source = app
-relative_files = True
-omit =
-    */tests/*
-    */test_*.py
-
-[report]
-show_missing = True
-precision = 2
+# SPDX-FileCopyrightText: Copyright Siemens 2026
+# SPDX-License-Identifier: Apache-2.0
+[run]
+branch = True
+source = app
+relative_files = True
+omit =
+    */tests/*
+    */test_*.py
+
+[report]
+show_missing = True
+precision = 2

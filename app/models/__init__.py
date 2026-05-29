@@ -1,2 +1,4 @@
-"""Pydantic models used by the PCF Creator API."""
-
+# SPDX-FileCopyrightText: Copyright Siemens 2026
+# SPDX-License-Identifier: Apache-2.0
+"""Pydantic models used by the PCF Creator API."""
+

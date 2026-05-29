@@ -1,11 +1,13 @@
-"""Cover :func:`app.api.deps.get_app_config`."""
-from __future__ import annotations
-
-from unittest.mock import patch
-
-from app.api.deps import get_app_config
-
-
-def test_get_app_config_returns_snapshot_from_loader() -> None:
-    with patch("app.api.deps.load_app_config", return_value={"x": 1}):
-        assert get_app_config() == {"x": 1}
+# SPDX-FileCopyrightText: Copyright Siemens 2026
+# SPDX-License-Identifier: Apache-2.0
+"""Cover :func:`app.api.deps.get_app_config`."""
+from __future__ import annotations
+
+from unittest.mock import patch
+
+from app.api.deps import get_app_config
+
+
+def test_get_app_config_returns_snapshot_from_loader() -> None:
+    with patch("app.api.deps.load_app_config", return_value={"x": 1}):
+        assert get_app_config() == {"x": 1}

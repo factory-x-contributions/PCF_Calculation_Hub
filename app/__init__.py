@@ -1,2 +1,4 @@
-"""Top-level package for the PCF Creator FastAPI application."""
-
+# SPDX-FileCopyrightText: Copyright Siemens 2026
+# SPDX-License-Identifier: Apache-2.0
+"""Top-level package for the PCF Creator FastAPI application."""
+
