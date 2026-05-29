@@ -30,14 +30,35 @@ jobs:
 
       - name: Run unit and simulation tests with coverage
         run: >-
-          python -m pytest tests/unit tests/simulation -q
+          rm -f coverage.xml .coverage
+          && python -m pytest tests/unit tests/simulation -q
           --cov=app --cov-config=.coveragerc
+          --cov-fail-under=91
           --cov-report=xml --cov-report=term-missing
+
+      - name: Verify coverage report
+        run: |
+          test -s coverage.xml
+          python - <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          root = ET.parse("coverage.xml").getroot()
+          line_rate = float(root.get("line-rate", 0))
+          branch_rate = float(root.get("branch-rate", 0))
+          lines = f"{root.get('lines-covered')}/{root.get('lines-valid')}"
+          print(f"coverage.xml line-rate={line_rate:.2%} branch-rate={branch_rate:.2%} lines={lines}")
+          if line_rate < 0.91:
+              sys.exit(f"Line coverage {line_rate:.2%} is below 91%")
+          PY
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
-          fail_ci_if_error: false
+          slug: a-z-e-r-i-l-a/PCF-Calculation-Hub
+          fail_ci_if_error: true
+          verbose: true
+          disable_search: true
 

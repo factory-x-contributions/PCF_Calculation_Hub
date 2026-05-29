@@ -1,97 +1,102 @@
 # SPDX-FileCopyrightText: Copyright Siemens 2026
 # SPDX-License-Identifier: Apache-2.0
-# Build and packaging
-.aws-sam/
-dist/
-build/
-*.egg-info/
-.eggs/
-*.egg
-*.whl
-pip-wheel-metadata/
-
-# Virtual environments
-.venv/
-venv/
-env/
-.env/
-
-# Environment and secrets (keep .env.example)
-.env
-.env.*
-!.env.example
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.pyd
-*.manifest
-.pytest_cache/
-.pytest_basetemp/
-.mypy_cache/
-.pytype/
-.ruff_cache/
-.dmypy.json
-dmypy.json
-.pyre/
-.hypothesis/
-*.cover
-.coverage
-.coverage.*
-coverage.xml
-htmlcov/
-*.prof
-
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb_checkpoints
-
-# IDE and editors
-.idea/
-*.sublime-project
-*.sublime-workspace
-.vscode/*
-!.vscode/extensions.json
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Swap / backup
-*.swp
-*.swo
-*~
-*.bak
-*.tmp
-*.temp
-
-# Logs and archives
-*.log
-*.tgz
-*.tar.gz
-*.zip
-
-# Local TLS (dev / EC2); use paths outside the repo in production if preferred
-cert.pem
-key.pem
-
-# Optional local tooling
-.tox/
-.cache/
-
-# Direnv
-.envrc
-
-# Optional front-end / IaC scratch (if added later)
-node_modules/
-cdk.out/
-.terraform/
-
-# Internal design reference (large binary doc; not part of source)
-FX_tp210_aggregation_app-v3.docx
+# Build and packaging
+.aws-sam/
+dist/
+build/
+*.egg-info/
+.eggs/
+*.egg
+*.whl
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env/
+
+# Environment and secrets (keep .env.example)
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.manifest
+.pytest_cache/
+.pytest_basetemp/
+.mypy_cache/
+.pytype/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.hypothesis/
+*.cover
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.prof
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE and editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/*
+!.vscode/extensions.json
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Swap / backup
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+*.temp
+
+# Logs and archives
+*.log
+*.tgz
+*.tar.gz
+*.zip
+
+# Local TLS (dev / EC2); never commit — use paths outside the repo in production
+cert.pem
+key.pem
+*.pem
+*.crt
+*.key
+
+# Optional local tooling
+.tox/
+.cache/
+.reuse/
+LICENSES/
+
+# Direnv
+.envrc
+
+# Optional front-end / IaC scratch (if added later)
+node_modules/
+cdk.out/
+.terraform/
+
+# Internal design reference (large binary doc; not part of source)
+FX_tp210_aggregation_app-v3.docx

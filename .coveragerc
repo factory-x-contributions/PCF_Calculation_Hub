@@ -1,13 +1,22 @@
 # SPDX-FileCopyrightText: Copyright Siemens 2026
 # SPDX-License-Identifier: Apache-2.0
-[run]
-branch = True
-source = app
-relative_files = True
-omit =
-    */tests/*
-    */test_*.py
-
-[report]
-show_missing = True
-precision = 2
+[run]
+branch = True
+source = app
+# Absolute paths in coverage.xml so Codecov maps hits to repo files (relative_files caused ~81% on Codecov).
+relative_files = False
+omit =
+    */tests/*
+    */test_*.py
+
+[paths]
+source =
+    app/
+    */app/
+    */PCF-Calculation-Hub/app/
+    */pcf-calculation-hub/app/
+
+[report]
+show_missing = True
+precision = 2
+fail_under = 91

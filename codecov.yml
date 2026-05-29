@@ -1,16 +1,26 @@
 # SPDX-FileCopyrightText: Copyright Siemens 2026
 # SPDX-License-Identifier: Apache-2.0
-# https://docs.codecov.com/docs/codecovyml-reference
-coverage:
-  status:
-    project:
-      default:
-        target: auto
-        threshold: 1%
-    patch:
-      default:
-        informational: true
-
-comment:
-  layout: "reach,diff,flags"
-  behavior: default
+# https://docs.codecov.com/docs/codecovyml-reference
+codecov:
+  # Reject reports whose embedded timestamp is >12h old (guards against committed coverage.xml).
+  # CI always generates a fresh report; keep off only if you must accept cached artifacts.
+  max_report_age: off
+
+# Map CI workspace paths to repo root so hits on app/integrations/aas.py are not dropped (~81% bug).
+fixes:
+  - "/home/runner/work/PCF-Calculation-Hub/PCF-Calculation-Hub/::"
+  - "home/runner/work/PCF-Calculation-Hub/PCF-Calculation-Hub/::"
+
+coverage:
+  status:
+    project:
+      default:
+        target: 91%
+        threshold: 0%
+    patch:
+      default:
+        informational: true
+
+comment:
+  layout: "reach,diff,flags"
+  behavior: default

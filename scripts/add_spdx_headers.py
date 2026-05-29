@@ -25,13 +25,12 @@ SKIP_DIRS = {
     "build",
     "dist",
     ".eggs",
+    "LICENSES",
 }
 
-# Paths handled via .reuse/dep5 (no inline comment syntax) or third-party license text.
+# Paths without inline comment syntax or third-party license text.
 SKIP_REL_PATHS = {
-    ".reuse/dep5",
     "coverage.xml",
-    "LICENSES/Apache-2.0.txt",
     "app/data/aas_processed_shells.json",
     "app/data/app_config.json",
     "app/data/data_base_factory.json",
@@ -160,8 +159,6 @@ def iter_files() -> list[Path]:
             continue
         rel = path.relative_to(ROOT).as_posix()
         if rel in SKIP_REL_PATHS:
-            continue
-        if rel.startswith("LICENSES/"):
             continue
         if path.suffix.lower() in SKIP_EXTENSIONS:
             continue

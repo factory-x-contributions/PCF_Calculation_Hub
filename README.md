@@ -2,7 +2,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # PCF Calculation Hub
 
-[![Tests](https://github.com/a-z-e-r-i-l-a/PCF-Creator-App/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/a-z-e-r-i-l-a/PCF-Creator-App/actions/workflows/ci.yml)
+[![Tests](https://github.com/a-z-e-r-i-l-a/PCF-Calculation-Hub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/a-z-e-r-i-l-a/PCF-Calculation-Hub/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/a-z-e-r-i-l-a/PCF-Calculation-Hub/graph/badge.svg?token=z4U9odxE8M)](https://codecov.io/github/a-z-e-r-i-l-a/PCF-Calculation-Hub)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.txt)
@@ -100,6 +100,8 @@ CI runs **unit** and **simulation** tests with coverage. **Integration** tests t
 | **2. Simulation tests** | Full FastAPI app via `TestClient`; externals mocked; temp JSON DB | Developer PC | `pytest tests/simulation -m simulation` |
 | **3. Integration tests** | Real HTTP to a running app | Developer PC → local or deployed URL | `LIVE_BASE_URL`, `pytest tests/integration -m integration` |
 | **4. CI** | Unit + simulation combined coverage | GitHub Actions | [`.github/workflows/ci.yml`](.github/workflows/ci.yml), Codecov |
+
+**Codecov badge:** After the first successful upload on `main`, the badge should match pytest (~94% combined, ~96% lines). Add `CODECOV_TOKEN` from [Codecov settings](https://codecov.io/gh/a-z-e-r-i-l-a/PCF-Calculation-Hub/settings) (or install the [Codecov GitHub App](https://github.com/apps/codecov)). If Codecov shows ~81% while CI passes the 91% gate, path mapping was wrong (fixed via `relative_files = False` and `fixes` in `codecov.yml`); re-run CI on `main` after that change.
 
 **Examples**
 
