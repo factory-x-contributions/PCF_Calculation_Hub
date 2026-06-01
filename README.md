@@ -6,6 +6,7 @@
 [![codecov](https://codecov.io/github/a-z-e-r-i-l-a/PCF-Calculation-Hub/graph/badge.svg?token=z4U9odxE8M)](https://codecov.io/github/a-z-e-r-i-l-a/PCF-Calculation-Hub)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.txt)
+[![Built by a-z-e-r-i-l-a](https://img.shields.io/badge/Built%20by-a--z--e--r--i--l--a-5865F2?style=flat)](https://github.com/a-z-e-r-i-l-a)
 
 **Beta version**
 
@@ -121,7 +122,7 @@ $env:LIVE_BASE_URL = "https://localhost:8443"; python -m pytest tests/integratio
 LIVE_BASE_URL=https://localhost:8443 python -m pytest tests/integration -m integration -v
 ```
 
-## Standards and interoperability
+## Git reset - - soft bf4d48329114acbf07b161b1bf53f19f9daa2969Standards and interoperability
 
 Aligned with industrial and sustainability integration patterns used in Factory-X demonstrators:
 
@@ -173,7 +174,7 @@ Reference stack this release is validated against:
 
 ## License and Copyright
 
-Copyright © 2026 Siemens.
+Copyright Siemens 2026.
 
 This project is licensed under the [Apache License, Version 2.0](LICENSE.txt). Please see the [NOTICE](NOTICE) file for additional third-party and project notices when present in a distribution.
 

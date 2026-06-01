@@ -374,7 +374,7 @@
 
 
 
-   Copyright 2026 Alireza Ranjbar
+   Copyright [yyyy] [name of copyright owner]
 
 
 
