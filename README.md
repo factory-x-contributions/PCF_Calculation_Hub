@@ -8,7 +8,7 @@ This repository is archived. It will receive no further development or maintenan
 # PCF Calculation Hub
 
 [![Tests](https://github.com/a-z-e-r-i-l-a/PCF-Calculation-Hub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/a-z-e-r-i-l-a/PCF-Calculation-Hub/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/a-z-e-r-i-l-a/PCF-Calculation-Hub/graph/badge.svg?token=z4U9odxE8M)](https://codecov.io/github/a-z-e-r-i-l-a/PCF-Calculation-Hub)
+[![codecov](https://codecov.io/gh/a-z-e-r-i-l-a/PCF-Calculation-Hub/graph/badge.svg)](https://codecov.io/gh/a-z-e-r-i-l-a/PCF-Calculation-Hub)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.txt)
 [![Built by a-z-e-r-i-l-a](https://img.shields.io/badge/Built%20by-a--z--e--r--i--l--a-5865F2?style=flat)](https://github.com/a-z-e-r-i-l-a)
@@ -50,7 +50,7 @@ Upstream systems (including IIH-backed aggregators) perform **state-aware aggreg
 
 1. **Python 3.11+** and a virtual environment: `python -m venv .venv`, then activate (Windows: `.venv\Scripts\activate`).
 2. **Install dependencies:** `pip install -r requirements.txt`.
-3. **Environment:** copy [`.env.example`](.env.example) → `.env` and adjust ports, secrets, and optional Entra/S3 variables.
+3. **Environment:** copy [`.env.example`](.env.example) → `.env`, copy [`app/data/app_config.example.json`](app/data/app_config.example.json) → `app/data/app_config.json`, and set your own credentials (see **Testing and configuration concept** below).
 4. **TLS (recommended):** place `cert.pem` and `key.pem` in the project root or set `SSL_CERTFILE` / `SSL_KEYFILE` in `.env`. If files are missing, `python -m app.main` still binds **8443** but serves **plain HTTP** (a warning is logged—use certs in production).
 5. **Start the API:** from the repo root, `python -m app.main` listens on **`PORT_HTTPS`** (default **8443**).
 
@@ -96,6 +96,8 @@ The hub is intended for deployment behind site or cloud perimeter controls (API 
 
 Configuration is **environment-first** (`.env` / Lambda parameters): database paths, S3 buckets for durable JSON, SiGREEN and AAS settings, Entra redirect base URL, session secrets, and basic auth for `/data_base_view`.
 
+**Credentials:** This repository ships without third-party API secrets. Copy [`app/data/app_config.example.json`](app/data/app_config.example.json) to `app/data/app_config.json` and enter your own SiGREEN and AAS credentials (via `/config` or env vars). For Green Grid Compass carbon intensity, set `GRID_CLIENT_ID` and `GRID_CLIENT_SECRET` in `.env`. Unit and simulation tests use mocks and do not need live credentials; integration tests against a running app require a configured instance with your credentials.
+
 ### Test tiers
 
 CI runs **unit** and **simulation** tests with coverage. **Integration** tests target a **running** instance with optional live MES, AAS, or aggregator endpoints.
@@ -127,7 +129,7 @@ $env:LIVE_BASE_URL = "https://localhost:8443"; python -m pytest tests/integratio
 LIVE_BASE_URL=https://localhost:8443 python -m pytest tests/integration -m integration -v
 ```
 
-## Git reset - - soft bf4d48329114acbf07b161b1bf53f19f9daa2969Standards and interoperability
+## Standards and interoperability
 
 Aligned with industrial and sustainability integration patterns used in Factory-X demonstrators:
 

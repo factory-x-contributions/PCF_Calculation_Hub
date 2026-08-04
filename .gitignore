@@ -21,6 +21,9 @@ env/
 .env.*
 !.env.example
 
+# Runtime config may contain SiGREEN/AAS secrets — use app/data/app_config.example.json as template
+app/data/app_config.json
+
 # Python
 __pycache__/
 *.py[cod]

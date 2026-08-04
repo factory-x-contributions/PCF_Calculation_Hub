@@ -14,6 +14,13 @@ from app.integrations.grid import (
     enforce_time_resolution,
 )
 
+_TEST_GRID_CLIENT_ID = "test-grid-client-id"
+_TEST_GRID_CLIENT_SECRET = "test-grid-client-secret"
+
+
+def _grid() -> GridInterface:
+    return GridInterface(client_id=_TEST_GRID_CLIENT_ID, client_secret=_TEST_GRID_CLIENT_SECRET)
+
 
 def test_enforce_time_resolution_string_inputs_extends_window() -> None:
     s = "2026-01-01T10:00:00Z"
@@ -33,7 +40,7 @@ def test_enforce_time_resolution_datetime_already_wide() -> None:
 
 def test_get_token_uses_cache_before_expiry() -> None:
     """Once primed, repeated get_token calls must not re-hit the IdP within the TTL window."""
-    gi = GridInterface()
+    gi = _grid()
     mock_resp = MagicMock()
     mock_resp.json.return_value = {"access_token": "cached-token", "expires_in": 3600}
     mock_resp.raise_for_status = MagicMock()
@@ -44,7 +51,7 @@ def test_get_token_uses_cache_before_expiry() -> None:
 
 
 def test_get_token_fetches_and_stores_cache() -> None:
-    gi = GridInterface()
+    gi = _grid()
     mock_resp = MagicMock()
     mock_resp.json.return_value = {"access_token": "new-tok", "expires_in": 3600}
     mock_resp.raise_for_status = MagicMock()
@@ -56,7 +63,7 @@ def test_get_token_fetches_and_stores_cache() -> None:
 
 def test_get_token_cache_refresh_when_near_expiry() -> None:
     """When the cached token is past its leeway window, the next get_token must fetch fresh credentials."""
-    gi = GridInterface()
+    gi = _grid()
     # Inject a deterministic clock so 'now' jumps across the leeway boundary in one test.
     fake_clock = MagicMock(side_effect=[0.0, 100_000.0])
     gi._token_cache._clock = fake_clock  # only-test surface on the TokenCache
@@ -73,13 +80,13 @@ def test_get_token_cache_refresh_when_near_expiry() -> None:
 
 def test_get_co2_coeff_list_empty_payload() -> None:
     """Missing or empty ``measurements`` must yield an empty coefficient list."""
-    gi = GridInterface()
+    gi = _grid()
     with patch.object(gi, "get_carbon_data", return_value={}):
         assert gi.get_co2_coeff_list("2026-01-01T00:00:00Z", "2026-01-01T02:00:00Z") == []
 
 
 def test_get_carbon_data_and_coeff_list() -> None:
-    gi = GridInterface()
+    gi = _grid()
     payload = {
         "measurements": [
             {"measurementValues": [{"value": 10.0}, {"value": None}, {"value": 20.0}]},
@@ -98,13 +105,13 @@ def test_get_carbon_data_and_coeff_list() -> None:
 
 
 def test_average_carbon_value_mean_and_empty() -> None:
-    gi = GridInterface()
+    gi = _grid()
     data = {"measurements": [{"measurementValues": [{"value": 100.0}, {"value": 200.0}]}]}
     assert gi.average_carbon_value(data) == 150.0
     assert gi.average_carbon_value({"measurements": []}) is None
 
 
 def test_get_avg_carbon_coeff() -> None:
-    gi = GridInterface()
+    gi = _grid()
     with patch.object(gi, "get_carbon_data", return_value={"measurements": []}):
         assert gi.get_avg_carbon_coeff("a", "b") is None

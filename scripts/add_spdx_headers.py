@@ -32,7 +32,7 @@ SKIP_DIRS = {
 SKIP_REL_PATHS = {
     "coverage.xml",
     "app/data/aas_processed_shells.json",
-    "app/data/app_config.json",
+    "app/data/app_config.example.json",
     "app/data/data_base_factory.json",
     "app/data/data_base.json",
     "tests/fixtures/aas/AAS_WO_2026_03_04_Template.json",

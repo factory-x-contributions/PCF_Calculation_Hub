@@ -1,0 +1,21 @@
+{
+    "data_source": "",
+    "pcf_tool": "",
+    "sigreen_base_url": "https://app-uat.sigreen-playground.siemens.cloud/api",
+    "sigreen_token_url": "https://siemens-00340.eu.auth0.com/oauth/token/",
+    "sigreen_client_id": "",
+    "sigreen_client_secret": "",
+    "sigreen_factory_name": "OPC",
+    "sigreen_factory_id": "",
+    "sigreen_product_identifier_type": "Product ID",
+    "aas_base_url": "",
+    "aas_asset_name": "",
+    "aas_client_id": "",
+    "aas_client_secret": "",
+    "aas_type": "AAS (AssetFox)",
+    "aas_check_period_minutes": 0,
+    "carbon_intensity_source": "constant",
+    "carbon_intensity_constant_gco2": 350,
+    "pcf_include_bom": true,
+    "material_identifier_mapping": {}
+}
