@@ -1,5 +1,10 @@
 <!-- SPDX-FileCopyrightText: Copyright Siemens 2026 -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
+# Important
+
+This repository is archived. It will receive no further development or maintenance. Interested parties are invited to fork the repository and continue the work independently.
+
 # PCF Calculation Hub
 
 [![Tests](https://github.com/a-z-e-r-i-l-a/PCF-Calculation-Hub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/a-z-e-r-i-l-a/PCF-Calculation-Hub/actions/workflows/ci.yml)
