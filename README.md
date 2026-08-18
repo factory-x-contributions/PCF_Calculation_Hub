@@ -17,7 +17,7 @@ This repository is archived. It will receive no further development or maintenan
 
 The PCF Calculation Hub is a cloud-oriented service that ingests manufacturing consumption and production data, computes product carbon footprint (PCF) reports, and submits structured results to **SiGREEN** when configured.
 
-Its purpose is not to duplicate shopfloor aggregation. It sits **northbound** of systems that already tie energy to operations—MES pushes, AAS-backed flows, or edge aggregators such as the [IIH Aggregator Wizard](https://github.com/a-z-e-r-i-l-a/IIH_Aggregator_Wizard)—and turns that structured input into bookkeeping, carbon-intensity handling, optional material PCF enrichment, and PCF submission workflows.
+Its purpose is not to duplicate shopfloor aggregation. It sits **northbound** of systems that already tie energy to operations—MES pushes, AAS-backed flows, or edge aggregators such as the [IIH Aggregator Wizard](https://github.com/factory-x-contributions/IIH-Aggregation-Wizard)—and turns that structured input into bookkeeping, carbon-intensity handling, optional material PCF enrichment, and PCF submission workflows.
 
 ## Purpose
 
